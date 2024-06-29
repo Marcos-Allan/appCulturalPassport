@@ -1,8 +1,11 @@
 //IMPORTAÇÃO DOS COMPONENTES NATIVOS
-import { View, Image } from "react-native";
+import { View, Pressable, Image } from "react-native";
 
 //IMPORTAÇÃO DO PROVEDOR PARA PEGAR AS VARIÁVEIS GLOBAIS
 import { useMyContext } from "../../provider/geral";
+
+//IMPORTAÇÃO DAS BIBLIOTECAS
+import { useEffect } from "react";
 
 //TIPAGEM DAS PROPS DA PÁGINA
 import { StackScreenProps } from '@react-navigation/stack';
@@ -27,13 +30,30 @@ export const Signs:React.FC<Props> = ({ navigation }) => {
     const states:any = useMyContext()
 
     //DESESTRUTURA AS VARIAVEIS ESPECIFICADAS
-    const { theme } = states
+    const { theme, menuOpen, toggleMenuOpen } = states
+
+    //FUNÇÃO RESPONSÁVEL POR FECHAR O MENU SE ESTIVER ABERTO
+    function closeMenu(){
+        if(menuOpen == true){
+            toggleMenuOpen()
+        }else{
+            return
+        }
+    }
+
+    //FUNÇÃO CHAMADA TODA VEZ QUE CARREGA A PÁGINA
+    useEffect(() => {
+        closeMenu()
+    },[])
 
     return(
-        <View className={`w-full flex-grow-[1] items-center justify-start ${theme == 'light' ? 'bg-my-white' : 'bg-my-black'}`}>
+        <Pressable
+            onPress={closeMenu}
+            className={`w-full flex-grow-[1] items-center justify-start ${theme == 'light' ? 'bg-my-white' : 'bg-my-black'}`}
+        >
             <View className={`w-[90%] flex flex-col items-center justify-start`}>
                 
-                <View className={`w-full mt-8 justify-center flex flex-row items-center`}>
+                <View className={`w-[90%] mt-8 justify-center flex flex-row items-center`}>
                     <Return event={() => navigation.goBack()} />
                     <TitlePage text="salve seu progresso" />
                     <MenuButton />
@@ -46,11 +66,11 @@ export const Signs:React.FC<Props> = ({ navigation }) => {
                     source={require('../../../assets/imgs/person_2.png')}
                 />
 
-                <MyButton text="fazer login" event={() => navigation.navigate('Signs')} />
+                <MyButton text="fazer login" event={() => navigation.navigate('SignIn')} />
                 <MyButton text="criar conta" event={() => navigation.navigate('Home')} />
 
             </View>
             <Menu />
-        </View>
+        </Pressable>
     )
 }

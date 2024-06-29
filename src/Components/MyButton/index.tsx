@@ -10,7 +10,7 @@ interface Props {
     text: string
 }
 
-export default function MyButton(props: Props){
+export default function MyButton(props: Props) { 
 
     //RESGATA AS VARIAVEIS GLOBAIS
     const states:any = useMyContext()
@@ -20,7 +20,7 @@ export default function MyButton(props: Props){
 
     return(
         <Pressable
-            className={`w-full py-3 mt-2 mb-3 flex justify-center rounded-[12px] ${theme == 'light' ? 'bg-my-primary' : 'bg-my-secondary'}`}
+            className={`w-[90%] py-3 mt-2 mb-3 flex justify-center rounded-[12px] ${theme == 'light' ? 'bg-my-primary' : 'bg-my-secondary'}`}
             onPress={() => props.event && props.event()}
         >
             <Text className={`text-[20px] font-medium text-center capitalize ${theme == 'light' ? 'text-my-white' : 'text-my-black'}`}>{props.text}</Text>

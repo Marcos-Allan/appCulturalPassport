@@ -4,12 +4,12 @@ import { Text } from 'react-native'
 //IMPORTAÇÃO DO PROVEDOR PARA PEGAR AS VARIÁVEIS GLOBAIS
 import { useMyContext } from "../../provider/geral";
 
-//TIPAGEM DAS PROPS DOS COMPONENTES
+//TIPAGEM DAS PROPS DO COMPONENTE
 interface Props {
-    text: string,
+    text: string
 }
 
-export default function TitlePage(props: Props) {
+export default function Link(props: Props) {
 
     //RESGATA AS VARIAVEIS GLOBAIS
     const states:any = useMyContext()
@@ -18,6 +18,6 @@ export default function TitlePage(props: Props) {
     const { theme } = states
 
     return(
-        <Text className={`${theme == 'light' ? 'text-my-black' : 'text-my-white'} capitalize text-[22px] text-center flex-grow-[1] font-bold`}>{props.text}</Text>
+        <Text className={`underline text-[18px] my-2 ${theme == 'light' ? 'text-my-primary' : 'text-my-secondary'}`}>{props.text}</Text>
     )
 }

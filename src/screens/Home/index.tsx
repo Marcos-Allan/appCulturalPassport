@@ -1,5 +1,8 @@
 //IMPORTAÇÃO DOS COMPONENTES NATIVOS
-import { View, Image } from "react-native";
+import { View, Pressable, Image } from "react-native";
+
+//IMPORTAÇÃO DAS BIBLIOTECAS
+import { useEffect } from "react";
 
 //IMPORTAÇÃO DO PROVEDOR PARA PEGAR AS VARIÁVEIS GLOBAIS
 import { useMyContext } from "../../provider/geral";
@@ -26,13 +29,30 @@ export const Home:React.FC<Props> = ({ navigation }) => {
     const states:any = useMyContext()
 
     //DESESTRUTURA AS VARIAVEIS ESPECIFICADAS
-    const { theme } = states
+    const { theme, menuOpen, toggleMenuOpen } = states
+
+    //FUNÇÃO RESPONSÁVEL POR FECHAR O MENU SE ESTIVER ABERTO
+    function closeMenu(){
+        if(menuOpen == true){
+            toggleMenuOpen()
+        }else{
+            return
+        }
+    }
+
+    //FUNÇÃO CHAMADA TODA VEZ QUE CARREGA A PÁGINA
+    useEffect(() => {
+        closeMenu()
+    },[])
 
     return(
-        <View className={`w-full flex-grow-[1] items-center justify-start ${theme == 'light' ? 'bg-my-white' : 'bg-my-black'}`}>
+        <Pressable
+            onPress={closeMenu}
+            className={`w-full flex-grow-[1] items-center justify-start ${theme == 'light' ? 'bg-my-white' : 'bg-my-black'}`}
+        >
             <View className={`w-[90%] flex flex-col items-center justify-start`}>
                 
-                <View className={`w-full mt-8 justify-center flex flex-row items-center`}>
+                <View className={`w-[90%] mt-8 justify-center flex flex-row items-center`}>
                     <TitlePage text="bem vindo estudante" />
                     <MenuButton />
                 </View>
@@ -46,6 +66,6 @@ export const Home:React.FC<Props> = ({ navigation }) => {
                 <MyButton text="iniciar" event={() => navigation.navigate('Signs')} />
             </View>
             <Menu />
-        </View>
+        </Pressable>
     )
 }
