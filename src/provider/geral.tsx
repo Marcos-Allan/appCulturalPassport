@@ -45,6 +45,8 @@ interface User {
 interface Alert {
     type: string,
     text: string,
+    isVisible: boolean,
+    time: number,
 }
 
 //CRIA E EXPORTA O PROVEDOR DOS ESTADOS
@@ -55,7 +57,7 @@ export const MyProvider = ({ children } : { children: React.ReactNode }) => {
     const [menuOpen, setMenuOpen] = useState<boolean>(false)
     const [userS, setUserS] = useState<User>({ logged: false, name: '', img: '', id: '' })
     const [loading, setLoading] = useState<boolean>(false)
-    const [message, setMessage] = useState<Alert>({ type: 'undefined', text: 'Alerta simples' })
+    const [message, setMessage] = useState<Alert>({ type: 'undefined', text: 'Alerta simples', isVisible: false, time: 0 })
 
     //FUNÇÃO RESPONSAVEL POR TROCAR E SALVAR O TEMA ESCOLHIDO PELO USUÁRIO
     const toggleTheme = () => {
@@ -78,8 +80,12 @@ export const MyProvider = ({ children } : { children: React.ReactNode }) => {
     }
 
     //FUNÇÃO RESPONSÁVEL POR DETERMINAR O TIPO E O TEXTO DO ALERTA
-    const toggleAlert = (type: string, text: string ) => {
-        setMessage({ type: type, text: text })
+    const toggleAlert = (type: string, text: string, isVisible:boolean = true, time: number ) => {
+        setMessage({ type: type, text: text, isVisible: isVisible, time: time })
+        
+        setTimeout(() => {
+            setMessage({ type: type, text: text, isVisible: false, time: time })
+        }, time);
     }
 
     //RETORNA TUDO PARA SER USADO EM TODO O SITE

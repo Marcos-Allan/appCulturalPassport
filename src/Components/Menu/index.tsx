@@ -1,5 +1,5 @@
 //IMPORTAÇÃO DOS COMPONENTES NATIVOS
-import { View } from "react-native";
+import { View, Text, Image } from "react-native";
 
 //IMPORTAÇÃO DO PROVEDOR PARA PEGAR AS VARIÁVEIS GLOBAIS
 import { useMyContext } from "../../provider/geral";
@@ -14,7 +14,7 @@ export default function Menu() {
     const states:any = useMyContext()
 
     //DESESTRUTURA AS VARIAVEIS ESPECIFICADAS
-    const { theme, menuOpen } = states
+    const { theme, menuOpen, userS } = states
 
     return(
         <View
@@ -22,6 +22,21 @@ export default function Menu() {
             ${menuOpen == true ? 'left-0' : 'left-[-300px]'}
             ${theme == 'light' ? 'bg-my-black' : 'bg-my-white'}
         `}>
+            {userS.logged == true && (
+                <View className={`flex flex-row items-center`}>
+                    {/* IMAGEM NÃO FUNCIONA POR QUE AS IMAGENS NÃO TEM URLs PÚBLICAS */}
+                    {/* <Image
+                        source={{ uri: userS.img }}
+                    /> */}
+                    
+                    <View className={`m-2 w-[80px] h-[80px] rounded-[40px] border-[1px] ${theme == 'light' ? 'border-my-quartenary' : 'border-my-secondary'}`}>
+                    </View>
+
+                    <Text className={`text-[18px] font-medium ${theme == 'light' ? 'text-my-white' : 'text-my-black'}`}>
+                        {userS.name}
+                    </Text>
+                </View>
+            )}
             <CloseButton />
             <ToggleTheme />
         </View>

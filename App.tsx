@@ -8,6 +8,9 @@ import { SignIn } from './src/screens/SignIn'
 
 import { Provider } from './src/provider';
 
+import LoadingPage from './src/Components/LoadingPage';
+import Alert from './src/Components/Alert';
+
 export type RootStackParamList = {
   Home: undefined;
   Signs: undefined;
@@ -27,6 +30,8 @@ export default function App() {
             <Stack.Screen name="Signs" component={Signs} />
             <Stack.Screen name="SignIn" component={SignIn} />
           </Stack.Navigator>
+          <LoadingPage />
+          <Alert />
         </NavigationContainer>
       </SafeAreaView>
     </Provider>

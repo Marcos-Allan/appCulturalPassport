@@ -2,10 +2,7 @@
 import { View, Pressable, Text, TextInput } from "react-native";
 
 //IMPORTAÇÃO DAS BIBLIOTECAS
-import { useState } from 'react'
-
-//IMPORTAÇÃO DAS BIBLIOTECAS
-import { useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 //IMPORTAÇÃO DO PROVEDOR PARA PEGAR AS VARIÁVEIS GLOBAIS
 import { useMyContext } from "../../provider/geral";
@@ -18,14 +15,17 @@ interface Props {
     value: string,
     placeholder: string,
     label: string,
-    onChange: any,
     icon: string,
-    type: string
-    hidden?: boolean
+    type: string,
+    hidden?: boolean,
+    inputFocus: boolean,
+    onChange: any,
+    onBlur: () => void,
+    onFocus: () => void,
 }
 
 export default function Input(props: Props) {
-    //FAZ REFERENCIA A UM ELEMENTO
+    //FAZ REFERÊNCIA A UM ELEMENTO
     const inputRef = useRef<any>(null)
 
     //RESGATA AS VARIAVEIS GLOBAIS
@@ -43,6 +43,14 @@ export default function Input(props: Props) {
 
     //UTILIZAÇÃO DO HOOK useState
     const [isHidden, setIsHidden] = useState<boolean>(props.hidden ? props.hidden : false)
+
+    useEffect(() => {
+        if(props.inputFocus == true){
+            if(inputRef.current){
+                inputRef.current.focus()
+            }
+        }
+    },[props.inputFocus])
 
     return(
         <View className={`w-[90%] flex flex-col mb-5`}>
@@ -79,6 +87,8 @@ export default function Input(props: Props) {
                 </View>
 
                 <TextInput
+                    onBlur={props.onBlur}
+                    onFocus={props.onFocus}
                     ref={inputRef}
                     secureTextEntry={isHidden}
                     cursorColor={`${theme == 'light' ? '#818181' : '#c0c0c0'}`}
