@@ -28,7 +28,7 @@
  */
 
 //IMPORTAÇÃO DOS COMPONENTES NATIVOS
-import { View, Pressable, Text, Image, Vibration, Keyboard } from "react-native";
+import { View, Pressable, Vibration, Keyboard } from "react-native";
 
 //IMPORTAÇÃO DAS BIBLIOTECAS
 import { useState, useEffect } from "react";
@@ -70,8 +70,13 @@ export const SignIn:React.FC<Props> = ({ navigation }) => {
     const [placeholderEmail, setPlaceholderEmail] = useState<string>('Digite seu email')
     const [labelEmail, setLabelEmail] = useState<string>('email')
     const [textPassword, setTextPassword] = useState<string>('')
-    const [placeholderPassword, setPlaceholderPassword] = useState<string>('Digite seu password')
+    const [placeholderPassword, setPlaceholderPassword] = useState<string>('Digite sua senha')
     const [labelPassword, setLabelPassword] = useState<string>('Password')
+
+    //ESTADOS DOS INPUTS
+    const [statePassword, setStatePassword] = useState<boolean | string>('neutro')
+    const [stateEmail, setStateEmail] = useState<boolean | string>('neutro')
+    const [formValidate, setFormValidate] = useState<boolean>(false)
 
     const [inputFocus, setInputFocus] = useState<number>(0)
 
@@ -109,6 +114,15 @@ export const SignIn:React.FC<Props> = ({ navigation }) => {
 
             //VERIFICA SE A CONTA FOI ENCONTRADA PELO TIPO DO DADO RETORNADO
             if(typeof response.data === "object"){
+                //MUDA O ESTILO DO INPUT PARA PADRÃO
+                setStateEmail('neutro')
+                setStatePassword('neutro')
+
+                //MUDA O VALOR DO INPUT PARA VAZIO
+                setTextEmail('')
+                setTextPassword('')
+
+                //COLOCA OS DADOS DO USUÁRIO NO FRONTEND
                 toggleUser(response.data.name, response.data.img, response.data._id, true)
 
                 //MOSTRA MENSAGEM DE SUCESSO
@@ -119,6 +133,16 @@ export const SignIn:React.FC<Props> = ({ navigation }) => {
 
                 //MOSTRA MENSAGEM DE SUCESSO
                 toggleAlert('error', response.data, true, 5000)
+
+                //MUDA O ESTILO DO INPUT CASO O VALOR ESTEJA ERRADO OU INEXISTENTE NO BANCO DE DADOS
+                if(String(response.data).toLowerCase() == 'usuario não encontrado no sistema'){
+                    setStateEmail(false)
+                }
+                
+                //MUDA O ESTILO DO INPUT CASO O VALOR ESTEJA ERRADO OU INEXISTENTE NO BANCO DE DADOS
+                if(String(response.data).toLowerCase() == 'senha incorreta'){
+                    setStatePassword(false)
+                }
 
                 //FAZ O CELULAR VIBRAR DE ACORDO COM O PADRÃO FORNECIDO
                 Vibration.vibrate(patternError)
@@ -135,6 +159,80 @@ export const SignIn:React.FC<Props> = ({ navigation }) => {
             toggleAlert('error', 'Erro interno no servidor', true, 5000)
         })
     }
+
+    //FUNÇÃO RESPONSÁVEL POR PEGAR O TEXTO DIGITADO DO INPUT
+    function handleInputEmail(text:string){
+        //SETA O TESTA DO INPUT COM O VALOR RECEBIDO POR PARÂMETRO
+        setTextEmail(text)
+        
+        //TESTA O INPUT COM REGEX
+        validateInputEmail()
+    }
+    
+    //FUNÇÃO RESPONSÁVEL POR PEGAR O TEXTO DIGITADO DO INPUT
+    function handleInputPassword(text:string){
+        //SETA O TESTA DO INPUT COM O VALOR RECEBIDO POR PARÂMETRO
+        setTextPassword(text)
+
+        //TESTA O INPUT COM REGEX
+        validateInputPassword()
+    }
+    
+    function onBlurEmail(){
+        //TESTA O INPUT COM REGEX
+        validateInputEmail()
+
+        //MUDA O FOCUS DO INPUT PARA O PRÓXIMO
+        setInputFocus(inputFocus + 1)
+    }
+    
+    function onBlurPassword(){
+        //TESTA O INPUT COM REGEX
+        validateInputPassword()
+        
+        //MUDA O FOCUS DO INPUT PARA O PRÓXIMO
+        setInputFocus(inputFocus + 1)
+    }
+
+    //FUNÇÃO RESPONSÁVEL POR VER SE O CAMPO ESTÁ NO PADRÃO
+    function validateInputEmail(){
+        //USA REGEX PARA VERIFICAR O PADRÃO DA STRING
+        const padraoEmail = /^[\w._-]+@[\w._-]+\.[\w]{2,}/i
+        
+        //VERIFICA SE O INPUT ESTÁ DENTRO DO PADRÃO DO REGEX
+        if(padraoEmail.test(textEmail) == true){
+            setStateEmail(true)
+        }else if(textEmail.length == 0){
+            setStateEmail('neutro')
+        }else{
+            setStateEmail(false)
+        }
+    }
+    
+    //FUNÇÃO RESPONSÁVEL POR VER SE O CAMPO ESTÁ NO PADRÃO
+    function validateInputPassword(){
+        //USA REGEX PARA VERIFICAR O PADRÃO DA STRING
+        const padraoPassword = /^[\w._-]{6,10}$/i
+
+        //VERIFICA SE O INPUT ESTÁ DENTRO DO PADRÃO DO REGEX
+        if(padraoPassword.test(textPassword) == true){
+            setStatePassword(true)
+        }else if(textPassword.length == 0){
+            setStatePassword('neutro')
+        }else{
+            setStatePassword(false)
+        }
+    }
+
+    //FUNÇÃO CHAMADA AO RECARREGAR A PÁGINA OU QUANDO HAVER MUDANÇAS NOS ESTADOS
+    useEffect(() => {
+        //VERIFICA SE OS ESTADOS DOS INPUTS ESTÃO CERTOS
+        if(stateEmail == true && statePassword == true){
+            setFormValidate(true)
+        }else{
+            setFormValidate(false)
+        }
+    },[stateEmail, statePassword]) 
 
     //FUNÇÃO CHAMADA TODA VEZ QUE CARREGA A PÁGINA
     useEffect(() => {
@@ -155,29 +253,35 @@ export const SignIn:React.FC<Props> = ({ navigation }) => {
 
                 <Input
                     label={labelEmail}
-                    onChange={setTextEmail}
+                    onChange={handleInputEmail}
                     placeholder={placeholderEmail}
                     value={textEmail}
                     icon="email"
                     type="email"
                     inputFocus={inputFocus == 0 ? true : false}
-                    onBlur={() => setInputFocus(inputFocus + 1)}
+                    onBlur={onBlurEmail}
                     onFocus={() => setInputFocus(0)}
+                    state={stateEmail}
+                    textError="email não encontrado ou fora do padrão"
+                    textSuccess="email dentro do padrão"
                 />
                 <Input
                     label={labelPassword}
-                    onChange={setTextPassword}
+                    onChange={handleInputPassword}
                     placeholder={placeholderPassword}
                     value={textPassword}
                     icon="password"
                     type="password"
                     hidden={true}
                     inputFocus={inputFocus == 1 ? true : false}
-                    onBlur={() => setInputFocus(inputFocus + 1)}
+                    onBlur={onBlurPassword}
                     onFocus={() => setInputFocus(1)}
+                    state={statePassword}
+                    textError="senha incorreta ou fora do padrão"
+                    textSuccess="senha dentro do padrão"
                 />
 
-                <MyButton text="entrar" event={() => signin()} />
+                <MyButton text="entrar" event={() => signin()} disabled={formValidate} />
 
                 <Link text="Esqueceu sua senha?" />
                 <Link text="Crie sua conta" />

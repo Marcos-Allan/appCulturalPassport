@@ -36,7 +36,8 @@ import { useMyContext } from "../../provider/geral";
 //TIPAGEM DAS PROPS DOS COMPONENTES
 interface Props {
     event?: () => void,
-    text: string
+    text: string,
+    disabled?: boolean,
 }
 
 export default function MyButton(props: Props) { 
@@ -47,10 +48,23 @@ export default function MyButton(props: Props) {
     //DESESTRUTURA AS VARIAVEIS ESPECIFICADAS
     const { theme } = states
 
+    //EXECUTA A FUNÇÃO PASSADA POR PROPS
+    function myFunction(){
+        if(props.disabled == false){
+            return
+        }
+
+        props.event && props.event()
+    }
+
     return(
         <Pressable
-            className={`w-[90%] py-3 mt-2 mb-3 flex justify-center rounded-[12px] ${theme == 'light' ? 'bg-my-primary' : 'bg-my-secondary'}`}
-            onPress={() => props.event && props.event()}
+            className={`w-[90%] py-3 mt-2 mb-3 flex justify-center rounded-[12px]
+            ${theme == 'light' ? 'bg-my-primary' : 'bg-my-secondary'}
+            ${props.disabled == true && `${theme == 'light' ? 'bg-my-primary' : 'bg-my-secondary'}`}
+            ${props.disabled == false && `${theme == 'light' ? 'bg-my-gray' : 'bg-my-gray-black'}`}
+            `}
+            onPress={myFunction}
         >
             <Text className={`text-[20px] font-medium text-center capitalize ${theme == 'light' ? 'text-my-white' : 'text-my-black'}`}>{props.text}</Text>
         </Pressable>
