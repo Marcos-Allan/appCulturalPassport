@@ -185,9 +185,7 @@ export const SignIn:React.FC<Props> = ({ navigation }) => {
                 <Separation />
 
                 <GoogleLogin />
-
-                 
-
+                
             </View>
             <Menu />
         </Pressable>

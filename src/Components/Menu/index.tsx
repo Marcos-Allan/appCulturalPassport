@@ -33,6 +33,9 @@ import { View, Text, Image } from "react-native";
 //IMPORTAÇÃO DO PROVEDOR PARA PEGAR AS VARIÁVEIS GLOBAIS
 import { useMyContext } from "../../provider/geral";
 
+//IMPORTAÇÃO DOS ICONES
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+
 //IMPORTAÇÃO DOS COMPONENTES
 import ToggleTheme from "../ToggleTheme";
 import CloseButton from "../CloseMenu";
@@ -53,12 +56,15 @@ export default function Menu() {
         `}>
             {userS.logged == true && (
                 <View className={`flex flex-row items-center`}>
-                    {/* IMAGEM NÃO FUNCIONA POR QUE AS IMAGENS NÃO TEM URLs PÚBLICAS */}
-                    {/* <Image
-                        source={{ uri: userS.img }}
-                    /> */}
-                    
-                    <View className={`m-2 w-[80px] h-[80px] rounded-[40px] border-[1px] ${theme == 'light' ? 'border-my-quartenary' : 'border-my-secondary'}`}>
+
+                    <View className={`m-2 w-[90px] h-[90px] rounded-[45px] flex items-center justify-center border-[1px] p-1 ${theme == 'light' ? 'border-my-quartenary' : 'border-my-secondary'}`} >
+                        <Image
+                            className={`w-[80px] h-[80px] rounded-[40px]`}
+                            source={{ uri: userS.img }}
+                        />
+                        <View className={`absolute top-[0px] right-[-2px] p-[3px] rounded-[30px] ${theme == 'light' ? 'bg-my-quartenary' : 'bg-my-secondary'}`}>
+                            <MaterialCommunityIcons name='pencil-outline' size={18} color={'white'} />
+                        </View>
                     </View>
 
                     <Text className={`text-[18px] font-medium ${theme == 'light' ? 'text-my-white' : 'text-my-black'}`}>
@@ -66,6 +72,7 @@ export default function Menu() {
                     </Text>
                 </View>
             )}
+            
             <CloseButton />
             <ToggleTheme />
         </View>
