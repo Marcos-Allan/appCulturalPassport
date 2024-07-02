@@ -47,13 +47,10 @@ interface Props {
     icon: string,
     type: string,
     hidden?: boolean,
-    inputFocus: boolean,
     state: boolean | string,
     textSuccess: string,
     textError: string,
     onChange: any,
-    onBlur: () => void,
-    onFocus: () => void,
 }
 
 export default function Input(props: Props) {
@@ -79,20 +76,15 @@ export default function Input(props: Props) {
 
     //FUNÇÃO CHAMADA TODA VEZ QUE HAVER MUDANÇA NA VARIAVEL props.inputFocus
     useEffect(() => {
-        if(props.inputFocus == true){
-            if(inputRef.current){
-                inputRef.current.focus()
-            }
-        }
-    },[props.inputFocus])
-
-    useEffect(() => {
         if(props.state == false){
+            //MUDA A COR DA VARIÁVEL
             setColor('#ff0000')
         }else if(props.state == true){
+            //MUDA A COR DA VARIÁVEL color
             setColor('#00ff00')
         }else{
-            setColor(`${props.state == 'neutro' && theme == 'light' ? '#818181' : '#c0c0c0'}`)
+            //MUDA A COR DA VARIÁVEL color
+            setColor(`${props.state == 'neutro' && theme == 'light' ? '#716868' : '#c0c0c0'}`)
         }
     },[props.state])
 
@@ -137,8 +129,6 @@ export default function Input(props: Props) {
                 </View>
 
                 <TextInput
-                    onBlur={props.onBlur}
-                    onFocus={props.onFocus}
                     ref={inputRef}
                     secureTextEntry={isHidden}
                     cursorColor={`${color}`}
@@ -179,11 +169,11 @@ export default function Input(props: Props) {
                     </Pressable>
                 )}
                 {props.state == true && (
-                    <Text className={`capitalize text-[10px] ml-2 mt-1 text-[#00ff00]`}>{props.textSuccess}</Text>
+                    <Text className={`w-full text-left capitalize text-[10px] ml-2 mt-1 text-[#00ff00]`}>{props.textSuccess}</Text>
                 )}
                 
                 {props.state == false && (
-                    <Text className={`capitalize text-[10px] ml-2 mt-1 text-[#ff0000]`}>{props.textError}</Text>
+                    <Text className={`w-full text-left capitalize text-[10px] ml-2 mt-1 text-[#ff0000]`}>{props.textError}</Text>
                 )}
             </View>
         </View>

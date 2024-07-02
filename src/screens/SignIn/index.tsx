@@ -78,8 +78,6 @@ export const SignIn:React.FC<Props> = ({ navigation }) => {
     const [stateEmail, setStateEmail] = useState<boolean | string>('neutro')
     const [formValidate, setFormValidate] = useState<boolean>(false)
 
-    const [inputFocus, setInputFocus] = useState<number>(0)
-
     //FUNÇÃO RESPONSÁVEL POR FECHAR O MENU SE ESTIVER ABERTO
     function closeMenu(){
         if(menuOpen == true){
@@ -165,33 +163,23 @@ export const SignIn:React.FC<Props> = ({ navigation }) => {
         //SETA O TESTA DO INPUT COM O VALOR RECEBIDO POR PARÂMETRO
         setTextEmail(text)
         
-        //TESTA O INPUT COM REGEX
-        validateInputEmail()
+        //VERIFICA SE O EMAIL TEM PELO MENOS 16 CARACTERES
+        if(textEmail.length >= 16){
+            //TESTA O INPUT COM REGEX
+            validateInputEmail()
+        }
     }
     
     //FUNÇÃO RESPONSÁVEL POR PEGAR O TEXTO DIGITADO DO INPUT
     function handleInputPassword(text:string){
         //SETA O TESTA DO INPUT COM O VALOR RECEBIDO POR PARÂMETRO
         setTextPassword(text)
-
-        //TESTA O INPUT COM REGEX
-        validateInputPassword()
-    }
-    
-    function onBlurEmail(){
-        //TESTA O INPUT COM REGEX
-        validateInputEmail()
-
-        //MUDA O FOCUS DO INPUT PARA O PRÓXIMO
-        setInputFocus(inputFocus + 1)
-    }
-    
-    function onBlurPassword(){
-        //TESTA O INPUT COM REGEX
-        validateInputPassword()
         
-        //MUDA O FOCUS DO INPUT PARA O PRÓXIMO
-        setInputFocus(inputFocus + 1)
+        //VERIFICA SE O EMAIL TEM PELO MENOS 16 CARACTERES
+        if(textPassword.length >= 5){
+            //TESTA O INPUT COM REGEX
+            validateInputPassword()
+        }
     }
 
     //FUNÇÃO RESPONSÁVEL POR VER SE O CAMPO ESTÁ NO PADRÃO
@@ -258,9 +246,6 @@ export const SignIn:React.FC<Props> = ({ navigation }) => {
                     value={textEmail}
                     icon="email"
                     type="email"
-                    inputFocus={inputFocus == 0 ? true : false}
-                    onBlur={onBlurEmail}
-                    onFocus={() => setInputFocus(0)}
                     state={stateEmail}
                     textError="email não encontrado ou fora do padrão"
                     textSuccess="email dentro do padrão"
@@ -273,9 +258,6 @@ export const SignIn:React.FC<Props> = ({ navigation }) => {
                     icon="password"
                     type="password"
                     hidden={true}
-                    inputFocus={inputFocus == 1 ? true : false}
-                    onBlur={onBlurPassword}
-                    onFocus={() => setInputFocus(1)}
                     state={statePassword}
                     textError="senha incorreta ou fora do padrão"
                     textSuccess="senha dentro do padrão"
@@ -283,8 +265,8 @@ export const SignIn:React.FC<Props> = ({ navigation }) => {
 
                 <MyButton text="entrar" event={() => signin()} disabled={formValidate} />
 
-                <Link text="Esqueceu sua senha?" />
-                <Link text="Crie sua conta" />
+                <Link text="Esqueceu sua senha?" event={() => navigation.navigate('Home')} />
+                <Link text="Crie sua conta" event={() => navigation.navigate('SignUp')} />
 
                 <Separation />
 

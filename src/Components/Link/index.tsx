@@ -28,14 +28,15 @@
  */
 
 //IMPORTAÇÃO DOS COMPONENTES NATIVOS
-import { Text } from 'react-native'
+import { Pressable, Text } from 'react-native'
 
 //IMPORTAÇÃO DO PROVEDOR PARA PEGAR AS VARIÁVEIS GLOBAIS
 import { useMyContext } from "../../provider/geral";
 
 //TIPAGEM DAS PROPS DO COMPONENTE
 interface Props {
-    text: string
+    text: string,
+    event?: () => void
 }
 
 export default function Link(props: Props) {
@@ -47,6 +48,8 @@ export default function Link(props: Props) {
     const { theme } = states
 
     return(
-        <Text className={`underline text-[18px] my-2 ${theme == 'light' ? 'text-my-primary' : 'text-my-secondary'}`}>{props.text}</Text>
+        <Pressable onPress={() => props.event && props.event()}>
+            <Text className={`underline text-[18px] my-2 ${theme == 'light' ? 'text-my-primary' : 'text-my-secondary'}`}>{props.text}</Text>
+        </Pressable>
     )
 }
