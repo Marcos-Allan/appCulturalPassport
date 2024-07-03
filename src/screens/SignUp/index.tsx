@@ -75,7 +75,7 @@ export const SignUp:React.FC<Props> = ({ navigation }) => {
 
     const [labelName, setLabelName] = useState<string>('nome')
     const [labelLastName, setLabelLastName] = useState<string>('sobrenome')
-    const [labelDataNasc, setLabelDataNasc] = useState<string>('11/06/2006')
+    const [labelDataNasc, setLabelDataNasc] = useState<string>('data de nascimento')
     const [labelEmail, setLabelEmail] = useState<string>('email')
     const [labelPassword, setLabelPassword] = useState<string>('senha')
     const [labelConfirmPassword, setLabelConfirmPassword] = useState<string>('confirme a senha')
@@ -447,7 +447,7 @@ export const SignUp:React.FC<Props> = ({ navigation }) => {
                 
                 <MyButton text="entrar" disabled={formValidate} event={() => signup()}/>
 
-                <Link text="Esqueceu sua senha?" event={() => navigation.navigate('Home')}/>
+                <Link text="já possui uma conta?" event={() => navigation.navigate('SignIn')}/>
 
             </View>
             <Menu />

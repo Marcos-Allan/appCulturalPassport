@@ -53,11 +53,12 @@ import Link from "../../Components/Link";
 import Separation from "../../Components/Separation";
 import GoogleLogin from "../../Components/GoogleLogin";
 import instance from "../../utils/axios";
+import MyText from "../../Components/MyText";
 
 //TIPAGEEM DAS ROTAS
-type Props = StackScreenProps<RootStackParamList, 'SignIn'>;
+type Props = StackScreenProps<RootStackParamList, 'ForgoutPassword'>;
 
-export const SignIn:React.FC<Props> = ({ navigation }) => {
+export const ForgoutPassword:React.FC<Props> = ({ navigation }) => {
 
     //RESGATA AS VARIAVEIS GLOBAIS
     const states:any = useMyContext()
@@ -69,12 +70,8 @@ export const SignIn:React.FC<Props> = ({ navigation }) => {
     const [textEmail, setTextEmail] = useState<string>('')
     const [placeholderEmail, setPlaceholderEmail] = useState<string>('Digite seu email')
     const [labelEmail, setLabelEmail] = useState<string>('email')
-    const [textPassword, setTextPassword] = useState<string>('')
-    const [placeholderPassword, setPlaceholderPassword] = useState<string>('Digite sua senha')
-    const [labelPassword, setLabelPassword] = useState<string>('Password')
 
     //ESTADOS DOS INPUTS
-    const [statePassword, setStatePassword] = useState<boolean | string>('neutro')
     const [stateEmail, setStateEmail] = useState<boolean | string>('neutro')
     const [formValidate, setFormValidate] = useState<boolean>(false)
 
@@ -93,71 +90,6 @@ export const SignIn:React.FC<Props> = ({ navigation }) => {
     //SISTEMA DE VIBRAÇÃO DE ERRO
     const patternError = [0, 450]
 
-    //FUNÇÃO RESPONSÁVEL POR FAZER LOGIN COM EMAIL E SENHA
-    function signin() {
-        //DISPENSA O TECLADO
-        Keyboard.dismiss()
-        
-        //MUDA O ESTADO DE CARREGAMENTO DA PÁGINA PARA true
-        toggleLoading(true)
-
-        instance.post('/signin', {
-            //MANDA OS DADOS PARA O BACKEND JUNTO COM A REQUISIÇÃO
-            email: textEmail,
-            password: textPassword
-        })
-        .then(function (response) {
-            //MUDA O ESTADO DE CARREGAMENTO DA PÁGINA PARA false
-            toggleLoading(false)
-
-            //VERIFICA SE A CONTA FOI ENCONTRADA PELO TIPO DO DADO RETORNADO
-            if(typeof response.data === "object"){
-                //MUDA O ESTILO DO INPUT PARA PADRÃO
-                setStateEmail('neutro')
-                setStatePassword('neutro')
-
-                //MUDA O VALOR DO INPUT PARA VAZIO
-                setTextEmail('')
-                setTextPassword('')
-
-                //COLOCA OS DADOS DO USUÁRIO NO FRONTEND
-                toggleUser(response.data.name, response.data.img, response.data._id, true)
-
-                //MOSTRA MENSAGEM DE SUCESSO
-                toggleAlert('success', `Seja bem vindo(a), ${response.data.name}`, true, 5000)
-            }else{
-                //MUDA O ESTADO DE CARREGAMENTO DA PÁGINA PARA false
-                toggleLoading(false)
-
-                //MOSTRA MENSAGEM DE SUCESSO
-                toggleAlert('error', response.data, true, 5000)
-
-                //MUDA O ESTILO DO INPUT CASO O VALOR ESTEJA ERRADO OU INEXISTENTE NO BANCO DE DADOS
-                if(String(response.data).toLowerCase() == 'usuario não encontrado no sistema'){
-                    setStateEmail(false)
-                }
-                
-                //MUDA O ESTILO DO INPUT CASO O VALOR ESTEJA ERRADO OU INEXISTENTE NO BANCO DE DADOS
-                if(String(response.data).toLowerCase() == 'senha incorreta'){
-                    setStatePassword(false)
-                }
-
-                //FAZ O CELULAR VIBRAR DE ACORDO COM O PADRÃO FORNECIDO
-                Vibration.vibrate(patternError)
-            }
-        })
-        .catch(function (error) {
-            //EXECUTA UMA FUNÇÃO QUANDO A REQUISIÇÃO FOR MAL SUCEDIDA
-            console.log(error)
-            
-            //FAZ O CELULAR VIBRAR DE ACORDO COM O PADRÃO FORNECIDO
-            Vibration.vibrate(patternError)
-            
-            //MOSTRA MENSAGEM DE ERRO
-            toggleAlert('error', 'Erro interno no servidor', true, 5000)
-        })
-    }
-
     //FUNÇÃO RESPONSÁVEL POR PEGAR O TEXTO DIGITADO DO INPUT
     function handleInputEmail(text:string){
         //SETA O TESTA DO INPUT COM O VALOR RECEBIDO POR PARÂMETRO
@@ -167,18 +99,6 @@ export const SignIn:React.FC<Props> = ({ navigation }) => {
         if(textEmail.length >= 16){
             //TESTA O INPUT COM REGEX
             validateInputEmail()
-        }
-    }
-    
-    //FUNÇÃO RESPONSÁVEL POR PEGAR O TEXTO DIGITADO DO INPUT
-    function handleInputPassword(text:string){
-        //SETA O TESTA DO INPUT COM O VALOR RECEBIDO POR PARÂMETRO
-        setTextPassword(text)
-        
-        //VERIFICA SE O EMAIL TEM PELO MENOS 16 CARACTERES
-        if(textPassword.length >= 5){
-            //TESTA O INPUT COM REGEX
-            validateInputPassword()
         }
     }
 
@@ -196,31 +116,64 @@ export const SignIn:React.FC<Props> = ({ navigation }) => {
             setStateEmail(false)
         }
     }
-    
-    //FUNÇÃO RESPONSÁVEL POR VER SE O CAMPO ESTÁ NO PADRÃO
-    function validateInputPassword(){
-        //USA REGEX PARA VERIFICAR O PADRÃO DA STRING
-        const padraoPassword = /^[\w._-]{6,10}$/i
 
-        //VERIFICA SE O INPUT ESTÁ DENTRO DO PADRÃO DO REGEX
-        if(padraoPassword.test(textPassword) == true){
-            setStatePassword(true)
-        }else if(textPassword.length == 0){
-            setStatePassword('neutro')
-        }else{
-            setStatePassword(false)
-        }
+    //FUNÇÃO RESPONSÁVEL POR ENVIAR CÓDIGO PARA O EMAIL DO USUÁRIO
+    function sendEmail() {
+
+        //MUDA O ESTADO DE CARREGAMENTO DA APLICAÇÃO PARA true
+        toggleLoading(true)
+
+        instance.get(`/forgoutpassword/${textEmail}`)
+        .then(function (response) {
+            //MUDA O ESTADO DE CARREGAMENTO DA APLICAÇÃO PARA false
+            toggleLoading(false)
+
+            //ESCREVE NO CONSOLE DO SITE 
+            console.log(response.data)
+
+            //VERIFICA SE A CONTA EXISTE NO BANCO DE DADOS
+            if(response.data == "Usuário não encontrado"){
+                //COLOCA ALERT NA TELA
+                toggleAlert(`error`, `Usuário não cadastrado`, true, 5000)
+
+                //FAZ O CELULAR VIBRAR DE ACORDO COM O PADRÃO FORNECIDO
+                Vibration.vibrate(patternError)
+            }else if(response.data.message == "Código enviado para o email informado"){
+                //COLOCA ALERT NA TELA
+                toggleAlert(`success`, `Email enviado`, true, 5000)
+
+                //RESGATA O ID DO USUÁRIO
+                toggleUser('', '', response.data.user._id, false)
+
+                //REDIRECIONA O USUÁRIO PARA A PRÓXIMA PÁGINA
+                navigation.navigate('ConfirmCode')
+            }
+
+        })
+        .catch(function (error) {
+            //EXECUTA UMA FUNÇÃO QUANDO A REQUISIÇÃO FOR MAL SUCEDIDA
+            console.log('ocorreu algum erro: ', error);
+
+            //FAZ O CELULAR VIBRAR DE ACORDO COM O PADRÃO FORNECIDO
+            Vibration.vibrate(patternError)
+            
+            //COLOCA ALERT NA TELA
+            toggleAlert(`error`, `lamentamos, erro interno no servidor`)
+            
+            //MUDA O ESTADO DE CARREGAMENTO DA APLICAÇÃO PARA false
+            toggleLoading(false)
+        })
     }
 
     //FUNÇÃO CHAMADA AO RECARREGAR A PÁGINA OU QUANDO HAVER MUDANÇAS NOS ESTADOS
     useEffect(() => {
         //VERIFICA SE OS ESTADOS DOS INPUTS ESTÃO CERTOS
-        if(stateEmail == true && statePassword == true){
+        if(stateEmail == true){
             setFormValidate(true)
         }else{
             setFormValidate(false)
         }
-    },[stateEmail, statePassword]) 
+    },[stateEmail]) 
 
     //FUNÇÃO CHAMADA TODA VEZ QUE CARREGA A PÁGINA
     useEffect(() => {
@@ -235,8 +188,12 @@ export const SignIn:React.FC<Props> = ({ navigation }) => {
                 
                 <View className={`w-[90%] mt-8 justify-center flex flex-row items-center mb-5`}>
                     <Return event={() => navigation.goBack()} />
-                    <TitlePage text="login" />
+                    <TitlePage text="esqueceu a senha" />
                     <MenuButton />
+                </View>
+
+                <View className="mb-8">
+                    <MyText text="Digite o endereço de email no campo abaixo" />
                 </View>
 
                 <Input
@@ -250,27 +207,12 @@ export const SignIn:React.FC<Props> = ({ navigation }) => {
                     textError="email não encontrado ou fora do padrão"
                     textSuccess="email dentro do padrão"
                 />
-                <Input
-                    label={labelPassword}
-                    onChange={handleInputPassword}
-                    placeholder={placeholderPassword}
-                    value={textPassword}
-                    icon="password"
-                    type="password"
-                    hidden={true}
-                    state={statePassword}
-                    textError="senha incorreta ou fora do padrão"
-                    textSuccess="senha dentro do padrão"
-                />
 
-                <MyButton text="entrar" event={() => signin()} disabled={formValidate} />
+                <View className="mb-8">
+                    <MyText text="enviaremos um código para o endereço de email digitado" />
+                </View >
 
-                <Link text="Esqueceu sua senha?" event={() => navigation.navigate('ForgoutPassword')} />
-                <Link text="Crie sua conta" event={() => navigation.navigate('SignUp')} />
-
-                <Separation />
-
-                <GoogleLogin />
+                <MyButton text="enviar" event={() => sendEmail()} disabled={formValidate} />
                 
             </View>
             <Menu />

@@ -53,29 +53,30 @@ import Link from "../../Components/Link";
 import Separation from "../../Components/Separation";
 import GoogleLogin from "../../Components/GoogleLogin";
 import instance from "../../utils/axios";
+import MyText from "../../Components/MyText";
 
 //TIPAGEEM DAS ROTAS
-type Props = StackScreenProps<RootStackParamList, 'SignIn'>;
+type Props = StackScreenProps<RootStackParamList, 'SwitchPassword'>;
 
-export const SignIn:React.FC<Props> = ({ navigation }) => {
+export const SwitchPassword:React.FC<Props> = ({ navigation }) => {
 
     //RESGATA AS VARIAVEIS GLOBAIS
     const states:any = useMyContext()
 
     //DESESTRUTURA AS VARIAVEIS ESPECIFICADAS
-    const { theme, menuOpen, toggleMenuOpen, userS, toggleUser, toggleLoading, toggleAlert } = states
+    const { theme, menuOpen, toggleMenuOpen, userS, toggleLoading, toggleAlert } = states
 
     //UTILIZAÇÃO DO HOOK useState
-    const [textEmail, setTextEmail] = useState<string>('')
-    const [placeholderEmail, setPlaceholderEmail] = useState<string>('Digite seu email')
-    const [labelEmail, setLabelEmail] = useState<string>('email')
     const [textPassword, setTextPassword] = useState<string>('')
-    const [placeholderPassword, setPlaceholderPassword] = useState<string>('Digite sua senha')
-    const [labelPassword, setLabelPassword] = useState<string>('Password')
+    const [placeholderPassword, setPlaceholderPassword] = useState<string>('Digite a nova senha')
+    const [labelPassword, setLabelPassword] = useState<string>('senha')
+    const [textConfirmPassword, setTextConfirmPassword] = useState<string>('')
+    const [labelConfirmPassword, setLabelConfirmPassword] = useState<string>('confirme a senha')
+    const [placeholderConfirmPassword, setPlaceholderConfirmPassword] = useState<string>('Confirme a senha')
+    const [stateConfirmPassword, setStateConfirmPassword] = useState<boolean | string>('neutro')
 
     //ESTADOS DOS INPUTS
     const [statePassword, setStatePassword] = useState<boolean | string>('neutro')
-    const [stateEmail, setStateEmail] = useState<boolean | string>('neutro')
     const [formValidate, setFormValidate] = useState<boolean>(false)
 
     //FUNÇÃO RESPONSÁVEL POR FECHAR O MENU SE ESTIVER ABERTO
@@ -92,83 +93,6 @@ export const SignIn:React.FC<Props> = ({ navigation }) => {
     
     //SISTEMA DE VIBRAÇÃO DE ERRO
     const patternError = [0, 450]
-
-    //FUNÇÃO RESPONSÁVEL POR FAZER LOGIN COM EMAIL E SENHA
-    function signin() {
-        //DISPENSA O TECLADO
-        Keyboard.dismiss()
-        
-        //MUDA O ESTADO DE CARREGAMENTO DA PÁGINA PARA true
-        toggleLoading(true)
-
-        instance.post('/signin', {
-            //MANDA OS DADOS PARA O BACKEND JUNTO COM A REQUISIÇÃO
-            email: textEmail,
-            password: textPassword
-        })
-        .then(function (response) {
-            //MUDA O ESTADO DE CARREGAMENTO DA PÁGINA PARA false
-            toggleLoading(false)
-
-            //VERIFICA SE A CONTA FOI ENCONTRADA PELO TIPO DO DADO RETORNADO
-            if(typeof response.data === "object"){
-                //MUDA O ESTILO DO INPUT PARA PADRÃO
-                setStateEmail('neutro')
-                setStatePassword('neutro')
-
-                //MUDA O VALOR DO INPUT PARA VAZIO
-                setTextEmail('')
-                setTextPassword('')
-
-                //COLOCA OS DADOS DO USUÁRIO NO FRONTEND
-                toggleUser(response.data.name, response.data.img, response.data._id, true)
-
-                //MOSTRA MENSAGEM DE SUCESSO
-                toggleAlert('success', `Seja bem vindo(a), ${response.data.name}`, true, 5000)
-            }else{
-                //MUDA O ESTADO DE CARREGAMENTO DA PÁGINA PARA false
-                toggleLoading(false)
-
-                //MOSTRA MENSAGEM DE SUCESSO
-                toggleAlert('error', response.data, true, 5000)
-
-                //MUDA O ESTILO DO INPUT CASO O VALOR ESTEJA ERRADO OU INEXISTENTE NO BANCO DE DADOS
-                if(String(response.data).toLowerCase() == 'usuario não encontrado no sistema'){
-                    setStateEmail(false)
-                }
-                
-                //MUDA O ESTILO DO INPUT CASO O VALOR ESTEJA ERRADO OU INEXISTENTE NO BANCO DE DADOS
-                if(String(response.data).toLowerCase() == 'senha incorreta'){
-                    setStatePassword(false)
-                }
-
-                //FAZ O CELULAR VIBRAR DE ACORDO COM O PADRÃO FORNECIDO
-                Vibration.vibrate(patternError)
-            }
-        })
-        .catch(function (error) {
-            //EXECUTA UMA FUNÇÃO QUANDO A REQUISIÇÃO FOR MAL SUCEDIDA
-            console.log(error)
-            
-            //FAZ O CELULAR VIBRAR DE ACORDO COM O PADRÃO FORNECIDO
-            Vibration.vibrate(patternError)
-            
-            //MOSTRA MENSAGEM DE ERRO
-            toggleAlert('error', 'Erro interno no servidor', true, 5000)
-        })
-    }
-
-    //FUNÇÃO RESPONSÁVEL POR PEGAR O TEXTO DIGITADO DO INPUT
-    function handleInputEmail(text:string){
-        //SETA O TESTA DO INPUT COM O VALOR RECEBIDO POR PARÂMETRO
-        setTextEmail(text)
-        
-        //VERIFICA SE O EMAIL TEM PELO MENOS 16 CARACTERES
-        if(textEmail.length >= 16){
-            //TESTA O INPUT COM REGEX
-            validateInputEmail()
-        }
-    }
     
     //FUNÇÃO RESPONSÁVEL POR PEGAR O TEXTO DIGITADO DO INPUT
     function handleInputPassword(text:string){
@@ -182,18 +106,15 @@ export const SignIn:React.FC<Props> = ({ navigation }) => {
         }
     }
 
-    //FUNÇÃO RESPONSÁVEL POR VER SE O CAMPO ESTÁ NO PADRÃO
-    function validateInputEmail(){
-        //USA REGEX PARA VERIFICAR O PADRÃO DA STRING
-        const padraoEmail = /^[\w._-]+@[\w._-]+\.[\w]{2,}/i
+    //FUNÇÃO RESPONSÁVEL POR PEGAR O TEXTO DIGITADO DO INPUT
+    function handleInputConfirmPassword(text:string){
+        //SETA O TESTA DO INPUT COM O VALOR RECEBIDO POR PARÂMETRO
+        setTextConfirmPassword(text)
         
-        //VERIFICA SE O INPUT ESTÁ DENTRO DO PADRÃO DO REGEX
-        if(padraoEmail.test(textEmail) == true){
-            setStateEmail(true)
-        }else if(textEmail.length == 0){
-            setStateEmail('neutro')
-        }else{
-            setStateEmail(false)
+        //VERIFICA SE O INPUT TEM PELO MENOS 16 CARACTERES
+        if(textConfirmPassword.length >= 5){
+            //TESTA O INPUT COM REGEX
+            validateInputConfirmPassword()
         }
     }
     
@@ -212,15 +133,65 @@ export const SignIn:React.FC<Props> = ({ navigation }) => {
         }
     }
 
+    //FUNÇÃO RESPONSÁVEL POR VER SE O CAMPO ESTÁ NO PADRÃO
+    function validateInputConfirmPassword(){
+        //USA REGEX PARA VERIFICAR O PADRÃO DA STRING
+        const padraoConfirmPassword = new RegExp(`\^${textPassword.slice(0, -1)}$`)
+
+        //VERIFICA SE O INPUT ESTÁ DENTRO DO PADRÃO DO REGEX
+        if(padraoConfirmPassword.test(textConfirmPassword) == true){
+            setStateConfirmPassword(true)
+        }else if(textConfirmPassword.length == 0){
+            setStateConfirmPassword('neutro')
+        }else{
+            setStateConfirmPassword(false)
+        }
+    }
+
+    //FUNÇÃO RESPONSÁVEL POR ATUALIZAR A SENHA DO USUÁRIO
+    function updateUser() {
+        //MUDA O ESTADO DE CARREGAMENTO DA APLICAÇÃO PARA true
+        toggleLoading(true)
+        
+        //FAZ UMA REQUISIÇÃO DO TIPO put PARA ATUALIZAR OS DADOS DO USUÁRIO
+        instance.put(`/users/update/${userS.id}`, {
+            password: textPassword
+        }).then((response) => {
+            //MUDA O ESTADO DE CARREGAMENTO DA APLICAÇÃO PARA false
+            toggleLoading(false)
+            
+            //MOSTRA OS DADOS DA REQUISIÇÃO
+            console.log(response.data)
+
+            //COLOCA ALERT NA TELA
+            toggleAlert(`success`, `Senha alterada com sucesso`)
+
+            //REDIRECIONA O USUÁRIO PARA A PRÓXIMA PÁGINA
+            navigation.navigate('SignIn')
+        }).catch((error) => {
+            //ESCREVE NO CONSOLE O ERRO OCORRIDO
+            console.log(`Requisição feita com falhas ${error}`)
+            
+            //MUDA O ESTADO DE CARREGAMENTO DA APLICAÇÃO PARA false
+            toggleLoading(false)
+            
+            //FAZ O CELULAR VIBRAR DE ACORDO COM O PADRÃO FORNECIDO
+            Vibration.vibrate(patternError)
+
+            //COLOCA ALERT NA TELA
+            toggleAlert(`error`, `Ocorreu um erro interno no servidor`)
+        })
+    }
+
     //FUNÇÃO CHAMADA AO RECARREGAR A PÁGINA OU QUANDO HAVER MUDANÇAS NOS ESTADOS
     useEffect(() => {
         //VERIFICA SE OS ESTADOS DOS INPUTS ESTÃO CERTOS
-        if(stateEmail == true && statePassword == true){
+        if(statePassword == true && stateConfirmPassword == true){
             setFormValidate(true)
         }else{
             setFormValidate(false)
         }
-    },[stateEmail, statePassword]) 
+    },[statePassword, stateConfirmPassword]) 
 
     //FUNÇÃO CHAMADA TODA VEZ QUE CARREGA A PÁGINA
     useEffect(() => {
@@ -239,17 +210,10 @@ export const SignIn:React.FC<Props> = ({ navigation }) => {
                     <MenuButton />
                 </View>
 
-                <Input
-                    label={labelEmail}
-                    onChange={handleInputEmail}
-                    placeholder={placeholderEmail}
-                    value={textEmail}
-                    icon="email"
-                    type="email"
-                    state={stateEmail}
-                    textError="email não encontrado ou fora do padrão"
-                    textSuccess="email dentro do padrão"
-                />
+                <View className="mb-8">
+                    <MyText text="Digite a nova senha" />
+                </View>
+
                 <Input
                     label={labelPassword}
                     onChange={handleInputPassword}
@@ -262,16 +226,23 @@ export const SignIn:React.FC<Props> = ({ navigation }) => {
                     textError="senha incorreta ou fora do padrão"
                     textSuccess="senha dentro do padrão"
                 />
+                <Input
+                    label={labelConfirmPassword}
+                    onChange={handleInputConfirmPassword}
+                    placeholder={placeholderConfirmPassword}
+                    value={textConfirmPassword}
+                    icon="password"
+                    type="password"
+                    hidden={true}
+                    state={stateConfirmPassword}
+                    textError="as senhas não são iguais"
+                    textSuccess="as senha são idênticas"
+                />
 
-                <MyButton text="entrar" event={() => signin()} disabled={formValidate} />
-
-                <Link text="Esqueceu sua senha?" event={() => navigation.navigate('ForgoutPassword')} />
-                <Link text="Crie sua conta" event={() => navigation.navigate('SignUp')} />
-
-                <Separation />
-
-                <GoogleLogin />
-                
+                <View className={`w-full flex items-center mt-4`}>
+                    <MyButton text="trocar" event={() => updateUser()} disabled={formValidate} />
+                </View>
+    
             </View>
             <Menu />
         </Pressable>

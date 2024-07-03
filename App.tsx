@@ -10,6 +10,9 @@ import { Home } from './src/screens/Home';
 import { Signs } from './src/screens/Signs';
 import { SignIn } from './src/screens/SignIn'
 import { SignUp } from './src/screens/SignUp';
+import { ForgoutPassword } from './src/screens/ForgoutPassword';
+import { ConfirmCode } from './src/screens/ConfirmCode';
+import { SwitchPassword } from './src/screens/SwitchPassword';
 
 //IMPORTAÇÃO DO PROVEDOR DE ESTADOS GLOBAIS
 import { Provider } from './src/provider';
@@ -24,6 +27,9 @@ export type RootStackParamList = {
   Signs: undefined;
   SignIn: undefined;
   SignUp: undefined;
+  ForgoutPassword: undefined;
+  ConfirmCode: undefined;
+  SwitchPassword: undefined;
 };
 
 //CONFIGURAÇÃO DAS ROTAS DAS PÁGINAS COM A TIPAGEM DAS PRÓPRIAS
@@ -40,6 +46,9 @@ export default function App() {
             <Stack.Screen name="Signs" component={Signs} />
             <Stack.Screen name="SignIn" component={SignIn} />
             <Stack.Screen name="SignUp" component={SignUp} />
+            <Stack.Screen name="ForgoutPassword" component={ForgoutPassword} />
+            <Stack.Screen name="ConfirmCode" component={ConfirmCode} />
+            <Stack.Screen name="SwitchPassword" component={SwitchPassword} />
           </Stack.Navigator>
           <LoadingPage />
           <Alert />
