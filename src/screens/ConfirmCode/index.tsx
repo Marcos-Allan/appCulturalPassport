@@ -49,8 +49,10 @@ import TitlePage from "../../Components/TitlePage";
 import MenuButton from "../../Components/MenuButton";
 import Return from "../../Components/Return";
 import Input from "../../Components/Input";
-import instance from "../../utils/axios";
 import MyText from "../../Components/MyText";
+
+//IMPORTAÇÃO DA CONFIGURAÇÃO BASE DO AXIOS
+import instance from "../../utils/axios";
 
 //TIPAGEEM DAS ROTAS
 type Props = StackScreenProps<RootStackParamList, 'ConfirmCode'>;

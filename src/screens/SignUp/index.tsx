@@ -50,6 +50,8 @@ import MenuButton from "../../Components/MenuButton";
 import Return from "../../Components/Return";
 import Input from "../../Components/Input";
 import Link from "../../Components/Link";
+
+//IMPORTAÇÃO DA CONFIGURAÇÃO BASE DO AXIOS
 import instance from "../../utils/axios";
 
 //TIPAGEEM DAS ROTAS

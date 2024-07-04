@@ -86,7 +86,7 @@ export default function Input(props: Props) {
             //MUDA A COR DA VARIÁVEL color
             setColor(`${props.state == 'neutro' && theme == 'light' ? '#716868' : '#c0c0c0'}`)
         }
-    },[props.state])
+    },[props.state, theme])
 
     return(
         <View className={`w-[90%] flex flex-col mb-5 justify-center`}>

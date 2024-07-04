@@ -52,6 +52,8 @@ import Input from "../../Components/Input";
 import Link from "../../Components/Link";
 import Separation from "../../Components/Separation";
 import GoogleLogin from "../../Components/GoogleLogin";
+
+//IMPORTAÇÃO DA CONFIGURAÇÃO BASE DO AXIOS
 import instance from "../../utils/axios";
 
 //TIPAGEEM DAS ROTAS
@@ -127,7 +129,7 @@ export const SignIn:React.FC<Props> = ({ navigation }) => {
                 toggleAlert('success', `Seja bem vindo(a), ${response.data.name}`, true, 5000)
 
                 //REDIRECIONA O USUÁRIO PARA A PRÓXIMA PÁGINA
-                navigation.navigate('MyPerfil')
+                navigation.navigate('Materias')
             }else{
                 //MUDA O ESTADO DE CARREGAMENTO DA PÁGINA PARA false
                 toggleLoading(false)

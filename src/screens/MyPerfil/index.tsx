@@ -48,8 +48,13 @@ import MyButton from "../../Components/MyButton";
 import TitlePage from "../../Components/TitlePage";
 import MenuButton from "../../Components/MenuButton";
 import Return from "../../Components/Return";
+import BottomNavigation from "../../Components/BottomNavigation";
+import AvatarCard from "../../Components/AvatarCard";
+import InfoStudentCard from "../../Components/InfoStudentCard";
 
+//IMPORTAÇÃO DA CONFIGURAÇÃO BASE DO AXIOS
 import instance from "../../utils/axios";
+
 
 //TIPAGEEM DAS ROTAS
 type Props = StackScreenProps<RootStackParamList, 'MyPerfil'>;
@@ -62,6 +67,7 @@ export const MyPerfil:React.FC<Props> = ({ navigation }) => {
     //DESESTRUTURA AS VARIAVEIS ESPECIFICADAS
     const { theme, menuOpen, toggleMenuOpen, userS, toggleUser, toggleLoading, toggleAlert } = states
 
+    //UTILIZAÇÃO DO HOOK useState
     const [image, setImage] = useState<string>(userS.img)
     const [textInput, setTextInput] = useState<string>(userS.name)
 
@@ -80,6 +86,7 @@ export const MyPerfil:React.FC<Props> = ({ navigation }) => {
     //SISTEMA DE VIBRAÇÃO DE ERRO
     const patternError = [0, 450]
 
+    //FUNÇÃO RESPONSÁVEL POR ATUALIZAR OS DADOS DO USUÁRIO
     function updateUser() {
         //MUDA O ESTADO DE CARREGAMENTO DA APLICAÇÃO PARA true
         toggleLoading(true)
@@ -107,6 +114,9 @@ export const MyPerfil:React.FC<Props> = ({ navigation }) => {
             //MUDA O ESTADO DE CARREGAMENTO DA APLICAÇÃO PARA false
             toggleLoading(false)
             
+            //FAZ O CELULAR VIBRAR DE ACORDO COM O PADRÃO FORNECIDO
+            Vibration.vibrate(patternError)
+
             //COLOCA ALERT NA TELA
             toggleAlert(`error`, `Ocorreu um erro interno no servidor`, true, 5000)
         })
@@ -120,7 +130,7 @@ export const MyPerfil:React.FC<Props> = ({ navigation }) => {
     return(
         <Pressable
             onPress={closeMenu}
-            className={`w-full flex-grow-[1] items-center justify-start ${theme == 'light' ? 'bg-my-white' : 'bg-my-black'}`}>
+            className={`w-full flex-grow-[1] flex-cols items-center justify-start ${theme == 'light' ? 'bg-my-white' : 'bg-my-black'}`}>
             <View className={`w-[90%] flex flex-col items-center justify-start`}>
                 
                 <View className={`w-[90%] mt-8 justify-center flex flex-row items-center mb-5`}>
@@ -131,7 +141,7 @@ export const MyPerfil:React.FC<Props> = ({ navigation }) => {
 
                 <ScrollView
                     contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-start', alignItems: 'center'}}
-                    style={{ minWidth: '100%', maxHeight: '82%' }}
+                    style={{ minWidth: '100%', maxHeight: '83.42%' }}
                 >
                     <View className={`w-[90%] flex flex-row items-center`}>
                         <View className={`m-2 w-[100px] h-[100px] rounded-[50px] flex items-center justify-center border-[1px] p-1 ${theme == 'light' ? 'border-my-secondary' : 'border-my-quartenary'}`}>
@@ -165,60 +175,37 @@ export const MyPerfil:React.FC<Props> = ({ navigation }) => {
                     <Text className={`text-[24px] capitalize my-2 ${theme == 'light' ? 'text-my-black' : 'text-my-white'}`}>avatares</Text>
 
                     <View className={`w-[90%] flex flex-row flex-wrap justify-center items-center`}>
-                        <Pressable
-                            onPress={() => setImage('https://cultural-passport.vercel.app/avatar-1.jpg')}
-                            className={`m-2 w-[90px] h-[90px] flex items-center justify-center rounded-[45px] ${image == "https://cultural-passport.vercel.app/avatar-1.jpg" && `border-[1px] translate-y-[-15px] ${theme == 'light' ? 'border-my-secondary' : 'border-my-quartenary'}`}
-                        `}>
-                            <Image
-                                className={`w-[80px] h-[80px] rounded-[40px]`}
-                                source={{ uri: 'https://cultural-passport.vercel.app/avatar-1.jpg' }}
-                            />
-                        </Pressable>
-                        <Pressable
-                            onPress={() => setImage('https://cultural-passport.vercel.app/avatar-2.jpg')}
-                            className={`m-2 w-[90px] h-[90px] flex items-center justify-center rounded-[45px] ${image == "https://cultural-passport.vercel.app/avatar-2.jpg" && `border-[1px] translate-y-[-15px] ${theme == 'light' ? 'border-my-secondary' : 'border-my-quartenary'}`}
-                        `}>
-                            <Image
-                                className={`w-[80px] h-[80px] rounded-[40px]`}
-                                source={{ uri: 'https://cultural-passport.vercel.app/avatar-2.jpg' }}
-                            />
-                        </Pressable>
-                        <Pressable
-                            onPress={() => setImage('https://cultural-passport.vercel.app/avatar-3.jpg')}
-                            className={`m-2 w-[90px] h-[90px] flex items-center justify-center rounded-[45px] ${image == "https://cultural-passport.vercel.app/avatar-3.jpg" && `border-[1px] translate-y-[-15px] ${theme == 'light' ? 'border-my-secondary' : 'border-my-quartenary'}`}
-                        `}>
-                            <Image
-                                className={`w-[80px] h-[80px] rounded-[40px]`}
-                                source={{ uri: 'https://cultural-passport.vercel.app/avatar-3.jpg' }}
-                            />
-                        </Pressable>
-                        <Pressable
-                            onPress={() => setImage('https://cultural-passport.vercel.app/avatar-4.jpg')}
-                            className={`m-2 w-[90px] h-[90px] flex items-center justify-center rounded-[45px] ${image == "https://cultural-passport.vercel.app/avatar-4.jpg" && `border-[1px] translate-y-[-15px] ${theme == 'light' ? 'border-my-secondary' : 'border-my-quartenary'}`}
-                        `}>
-                            <Image
-                                className={`w-[80px] h-[80px] rounded-[40px]`}
-                                source={{ uri: 'https://cultural-passport.vercel.app/avatar-4.jpg' }}
-                            />
-                        </Pressable>
-                        <Pressable
-                            onPress={() => setImage('https://cultural-passport.vercel.app/avatar-5.jpg')}
-                            className={`m-2 w-[90px] h-[90px] flex items-center justify-center rounded-[45px] ${image == "https://cultural-passport.vercel.app/avatar-5.jpg" && `border-[1px] translate-y-[-15px] ${theme == 'light' ? 'border-my-secondary' : 'border-my-quartenary'}`}
-                        `}>
-                            <Image
-                                className={`w-[80px] h-[80px] rounded-[40px]`}
-                                source={{ uri: 'https://cultural-passport.vercel.app/avatar-5.jpg' }}
-                            />
-                        </Pressable>
-                        <Pressable
-                            onPress={() => setImage('https://cultural-passport.vercel.app/avatar-6.jpg')}
-                            className={`m-2 w-[90px] h-[90px] flex items-center justify-center rounded-[45px] ${image == "https://cultural-passport.vercel.app/avatar-6.jpg" && `border-[1px] translate-y-[-15px] ${theme == 'light' ? 'border-my-secondary' : 'border-my-quartenary'}`}
-                        `}>
-                            <Image
-                                className={`w-[80px] h-[80px] rounded-[40px]`}
-                                source={{ uri: 'https://cultural-passport.vercel.app/avatar-6.jpg' }}
-                            />
-                        </Pressable>
+                        <AvatarCard
+                            activo={image == "https://cultural-passport.vercel.app/avatar-1.jpg" ? true : false}
+                            event={() => setImage('https://cultural-passport.vercel.app/avatar-1.jpg')}
+                            image="https://cultural-passport.vercel.app/avatar-1.jpg"
+                        />
+                        <AvatarCard
+                            activo={image == "https://cultural-passport.vercel.app/avatar-2.jpg" ? true : false}
+                            event={() => setImage('https://cultural-passport.vercel.app/avatar-2.jpg')}
+                            image="https://cultural-passport.vercel.app/avatar-2.jpg"
+                        />
+                        <AvatarCard
+                            activo={image == "https://cultural-passport.vercel.app/avatar-3.jpg" ? true : false}
+                            event={() => setImage('https://cultural-passport.vercel.app/avatar-3.jpg')}
+                            image="https://cultural-passport.vercel.app/avatar-3.jpg"
+                        />
+                        <AvatarCard
+                            activo={image == "https://cultural-passport.vercel.app/avatar-4.jpg" ? true : false}
+                            event={() => setImage('https://cultural-passport.vercel.app/avatar-4.jpg')}
+                            image="https://cultural-passport.vercel.app/avatar-4.jpg"
+                        />
+                        <AvatarCard
+                            activo={image == "https://cultural-passport.vercel.app/avatar-5.jpg" ? true : false}
+                            event={() => setImage('https://cultural-passport.vercel.app/avatar-5.jpg')}
+                            image="https://cultural-passport.vercel.app/avatar-5.jpg"
+                        />
+                        <AvatarCard
+                            activo={image == "https://cultural-passport.vercel.app/avatar-6.jpg" ? true : false}
+                            event={() => setImage('https://cultural-passport.vercel.app/avatar-6.jpg')}
+                            image="https://cultural-passport.vercel.app/avatar-6.jpg"
+                        />
+                        
                     </View> 
 
                     <View className={`w-full items-center mt-5`}>
@@ -227,29 +214,14 @@ export const MyPerfil:React.FC<Props> = ({ navigation }) => {
 
                     <Text className={`text-[24px] capitalize mt-2 mb-4 ${theme == 'light' ? 'text-my-black' : 'text-my-white'}`}>informações pessoais</Text>
 
-                    <View className={`mb-3 w-[90%] border-[2px] p-2 rounded-[20px] flex flex-row justify-between items-center ${theme == 'light' ? 'border-my-black' : 'border-my-white'}`}>
-                        <Text className={`text-[18px] font-semibold ${theme == 'light' ? 'text-my-black' : 'text-my-white'}`}>Escola: </Text>
-                        <Text className={`${theme == 'light' ? 'text-my-black' : 'text-my-white'}`}>ETEC Paulistano</Text>
-                    </View>
-                    
-                    <View className={`mb-3 w-[90%] border-[2px] p-2 rounded-[20px] flex flex-row justify-between items-center ${theme == 'light' ? 'border-my-black' : 'border-my-white'}`}>
-                        <Text className={`text-[18px] font-semibold ${theme == 'light' ? 'text-my-black' : 'text-my-white'}`}>RM: </Text>
-                        <Text className={`${theme == 'light' ? 'text-my-black' : 'text-my-white'}`}>22043</Text>
-                    </View>
-                    
-                    <View className={`mb-3 w-[90%] border-[2px] p-2 rounded-[20px] flex flex-row justify-between items-center ${theme == 'light' ? 'border-my-black' : 'border-my-white'}`}>
-                        <Text className={`text-[18px] font-semibold ${theme == 'light' ? 'text-my-black' : 'text-my-white'}`}>Data de Nascimento: </Text>
-                        <Text className={`${theme == 'light' ? 'text-my-black' : 'text-my-white'}`}>11/06/2006</Text>
-                    </View>
-                    
-                    <View className={`mb-3 w-[90%] border-[2px] p-2 rounded-[20px] flex flex-row justify-between items-center ${theme == 'light' ? 'border-my-black' : 'border-my-white'}`}>
-                        <Text className={`text-[18px] font-semibold ${theme == 'light' ? 'text-my-black' : 'text-my-white'}`}>CPF: </Text>
-                        <Text className={`${theme == 'light' ? 'text-my-black' : 'text-my-white'}`}>393.223.189-43</Text>
-                    </View>
-                    
+                    <InfoStudentCard title="Escola" value="ETEC Paulistano" />
+                    <InfoStudentCard title="RM" value="22043" />
+                    <InfoStudentCard title="Data de Nascimento" value="11/06/2006" />
+                    <InfoStudentCard title="CPF" value="393.223.189-43" />
                     
                 </ScrollView>
             </View>
+            <BottomNavigation route="perfil" />
             <Menu event={() => navigation.navigate('MyPerfil')} />
         </Pressable>
     )
