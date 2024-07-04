@@ -49,9 +49,6 @@ import TitlePage from "../../Components/TitlePage";
 import MenuButton from "../../Components/MenuButton";
 import Return from "../../Components/Return";
 import Input from "../../Components/Input";
-import Link from "../../Components/Link";
-import Separation from "../../Components/Separation";
-import GoogleLogin from "../../Components/GoogleLogin";
 import instance from "../../utils/axios";
 import MyText from "../../Components/MyText";
 
@@ -64,7 +61,7 @@ export const ConfirmCode:React.FC<Props> = ({ navigation }) => {
     const states:any = useMyContext()
 
     //DESESTRUTURA AS VARIAVEIS ESPECIFICADAS
-    const { theme, menuOpen, toggleMenuOpen, userS, toggleUser, toggleLoading, toggleAlert } = states
+    const { theme, menuOpen, toggleMenuOpen, toggleLoading, toggleAlert } = states
 
     //UTILIZAÇÃO DO HOOK useState
     const [textCode, setTextCode] = useState<string>('')
@@ -211,7 +208,7 @@ export const ConfirmCode:React.FC<Props> = ({ navigation }) => {
                 <MyButton text="enviar" event={() => verifyCode()} disabled={formValidate} />
                 
             </View>
-            <Menu />
+            <Menu event={() => navigation.navigate('MyPerfil')} />
         </Pressable>
     )
 }

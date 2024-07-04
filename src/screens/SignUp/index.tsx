@@ -50,8 +50,6 @@ import MenuButton from "../../Components/MenuButton";
 import Return from "../../Components/Return";
 import Input from "../../Components/Input";
 import Link from "../../Components/Link";
-import Separation from "../../Components/Separation";
-import GoogleLogin from "../../Components/GoogleLogin";
 import instance from "../../utils/axios";
 
 //TIPAGEEM DAS ROTAS
@@ -63,7 +61,7 @@ export const SignUp:React.FC<Props> = ({ navigation }) => {
     const states:any = useMyContext()
 
     //DESESTRUTURA AS VARIAVEIS ESPECIFICADAS
-    const { theme, menuOpen, toggleMenuOpen, userS, toggleUser, toggleLoading, toggleAlert } = states
+    const { theme, menuOpen, toggleMenuOpen, toggleLoading, toggleAlert } = states
 
     //UTILIZAÇÃO DO HOOK useState
     const [textName, setTextName] = useState<string>('')
@@ -450,7 +448,7 @@ export const SignUp:React.FC<Props> = ({ navigation }) => {
                 <Link text="já possui uma conta?" event={() => navigation.navigate('SignIn')}/>
 
             </View>
-            <Menu />
+            <Menu event={() => navigation.navigate('MyPerfil')} />
         </Pressable>
     )
 }

@@ -13,6 +13,7 @@ import { SignUp } from './src/screens/SignUp';
 import { ForgoutPassword } from './src/screens/ForgoutPassword';
 import { ConfirmCode } from './src/screens/ConfirmCode';
 import { SwitchPassword } from './src/screens/SwitchPassword';
+import { MyPerfil } from './src/screens/MyPerfil';
 
 //IMPORTAÇÃO DO PROVEDOR DE ESTADOS GLOBAIS
 import { Provider } from './src/provider';
@@ -30,6 +31,7 @@ export type RootStackParamList = {
   ForgoutPassword: undefined;
   ConfirmCode: undefined;
   SwitchPassword: undefined;
+  MyPerfil: undefined;
 };
 
 //CONFIGURAÇÃO DAS ROTAS DAS PÁGINAS COM A TIPAGEM DAS PRÓPRIAS
@@ -49,6 +51,7 @@ export default function App() {
             <Stack.Screen name="ForgoutPassword" component={ForgoutPassword} />
             <Stack.Screen name="ConfirmCode" component={ConfirmCode} />
             <Stack.Screen name="SwitchPassword" component={SwitchPassword} />
+            <Stack.Screen name="MyPerfil" component={MyPerfil} />
           </Stack.Navigator>
           <LoadingPage />
           <Alert />

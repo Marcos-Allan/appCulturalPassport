@@ -99,7 +99,7 @@ export const Signs:React.FC<Props> = ({ navigation }) => {
                 <MyButton text="criar conta" event={() => navigation.navigate('SignUp')} />
 
             </View>
-            <Menu />
+            <Menu event={() => navigation.navigate('MyPerfil')} />
         </Pressable>
     )
 }

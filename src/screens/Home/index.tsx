@@ -94,7 +94,7 @@ export const Home:React.FC<Props> = ({ navigation }) => {
                 />
                 <MyButton text="iniciar" event={() => navigation.navigate('Signs')} />
             </View>
-            <Menu />
+            <Menu event={() => navigation.navigate('MyPerfil')} />
         </Pressable>
     )
 }

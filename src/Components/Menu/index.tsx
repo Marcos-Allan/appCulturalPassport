@@ -28,7 +28,7 @@
  */
 
 //IMPORTAÇÃO DOS COMPONENTES NATIVOS
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, Pressable } from "react-native";
 
 //IMPORTAÇÃO DO PROVEDOR PARA PEGAR AS VARIÁVEIS GLOBAIS
 import { useMyContext } from "../../provider/geral";
@@ -40,7 +40,11 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import ToggleTheme from "../ToggleTheme";
 import CloseButton from "../CloseMenu";
 
-export default function Menu() {
+interface Props {
+    event: () => void
+}
+
+export default function Menu(props: Props) {
     
     //RESGATA AS VARIAVEIS GLOBAIS
     const states:any = useMyContext()
@@ -62,9 +66,12 @@ export default function Menu() {
                             className={`w-[80px] h-[80px] rounded-[40px]`}
                             source={{ uri: userS.img }}
                         />
-                        <View className={`absolute top-[0px] right-[-2px] p-[3px] rounded-[30px] ${theme == 'light' ? 'bg-my-quartenary' : 'bg-my-secondary'}`}>
+                        <Pressable
+                            onPress={() => props.event()}
+                            className={`absolute top-[0px] right-[-2px] p-[3px] rounded-[30px] ${theme == 'light' ? 'bg-my-quartenary' : 'bg-my-secondary'}
+                        `}>
                             <MaterialCommunityIcons name='pencil-outline' size={18} color={'white'} />
-                        </View>
+                        </Pressable>
                     </View>
 
                     <Text className={`text-[18px] font-medium ${theme == 'light' ? 'text-my-white' : 'text-my-black'}`}>

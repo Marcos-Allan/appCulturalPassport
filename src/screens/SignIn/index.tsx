@@ -63,7 +63,7 @@ export const SignIn:React.FC<Props> = ({ navigation }) => {
     const states:any = useMyContext()
 
     //DESESTRUTURA AS VARIAVEIS ESPECIFICADAS
-    const { theme, menuOpen, toggleMenuOpen, userS, toggleUser, toggleLoading, toggleAlert } = states
+    const { theme, menuOpen, toggleMenuOpen, toggleUser, toggleLoading, toggleAlert } = states
 
     //UTILIZAÇÃO DO HOOK useState
     const [textEmail, setTextEmail] = useState<string>('')
@@ -125,6 +125,9 @@ export const SignIn:React.FC<Props> = ({ navigation }) => {
 
                 //MOSTRA MENSAGEM DE SUCESSO
                 toggleAlert('success', `Seja bem vindo(a), ${response.data.name}`, true, 5000)
+
+                //REDIRECIONA O USUÁRIO PARA A PRÓXIMA PÁGINA
+                navigation.navigate('MyPerfil')
             }else{
                 //MUDA O ESTADO DE CARREGAMENTO DA PÁGINA PARA false
                 toggleLoading(false)
@@ -273,7 +276,7 @@ export const SignIn:React.FC<Props> = ({ navigation }) => {
                 <GoogleLogin />
                 
             </View>
-            <Menu />
+            <Menu event={() => navigation.navigate('MyPerfil')} />
         </Pressable>
     )
 }

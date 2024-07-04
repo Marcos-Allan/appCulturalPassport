@@ -49,9 +49,6 @@ import TitlePage from "../../Components/TitlePage";
 import MenuButton from "../../Components/MenuButton";
 import Return from "../../Components/Return";
 import Input from "../../Components/Input";
-import Link from "../../Components/Link";
-import Separation from "../../Components/Separation";
-import GoogleLogin from "../../Components/GoogleLogin";
 import instance from "../../utils/axios";
 import MyText from "../../Components/MyText";
 
@@ -244,7 +241,7 @@ export const SwitchPassword:React.FC<Props> = ({ navigation }) => {
                 </View>
     
             </View>
-            <Menu />
+            <Menu event={() => navigation.navigate('MyPerfil')} />
         </Pressable>
     )
 }
