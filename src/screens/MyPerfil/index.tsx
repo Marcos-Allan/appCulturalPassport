@@ -221,7 +221,13 @@ export const MyPerfil:React.FC<Props> = ({ navigation }) => {
                     
                 </ScrollView>
             </View>
-            <BottomNavigation route="perfil" />
+            <BottomNavigation
+                route="perfil"
+                eventH={() => navigation.navigate('Materias')}
+                eventMP={() => navigation.navigate('MyPerfil')}
+                eventE={() => navigation.navigate('Exercises')}
+                eventA={() => navigation.navigate('Achievements')}
+            />
             <Menu event={() => navigation.navigate('MyPerfil')} />
         </Pressable>
     )

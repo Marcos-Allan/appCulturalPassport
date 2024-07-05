@@ -28,7 +28,7 @@
  */
 
 //IMPORTAÇÃO DOS COMPONENTES NATIVOS
-import { View, Pressable, ScrollView } from "react-native";
+import { View, Pressable, ScrollView, Text } from "react-native";
 
 //IMPORTAÇÃO DAS BIBLIOTECAS
 import { useState, useEffect } from "react";
@@ -49,11 +49,13 @@ import MenuButton from "../../Components/MenuButton";
 import Return from "../../Components/Return";
 import BottomNavigation from "../../Components/BottomNavigation";
 import MaterialCard from "../../Components/MaterialCard";
+import MyText from "../../Components/MyText";
+import ExerciseCard from "../../Components/ExerciseCard";
 
 //TIPAGEEM DAS ROTAS
-type Props = StackScreenProps<RootStackParamList, 'Materias'>;
+type Props = StackScreenProps<RootStackParamList, 'Exercises'>;
 
-export const Materias:React.FC<Props> = ({ navigation }) => {
+export const Exercises:React.FC<Props> = ({ navigation }) => {
 
     //RESGATA AS VARIAVEIS GLOBAIS
     const states:any = useMyContext()
@@ -62,7 +64,7 @@ export const Materias:React.FC<Props> = ({ navigation }) => {
     const { theme, menuOpen, toggleMenuOpen } = states
 
     //UTILIZAÇÃO DO HOOK useState
-    const [matters, setMatters] = useState<any[]>([])
+    const [exercises, setExercises] = useState<any[]>([])
 
     //FUNÇÃO RESPONSÁVEL POR FECHAR O MENU SE ESTIVER ABERTO
     function closeMenu(){
@@ -81,17 +83,23 @@ export const Materias:React.FC<Props> = ({ navigation }) => {
 
     //FUNÇÃO CHAMADA TODA VEZ QUE CARREGA A PÁGINA
     useEffect(() => {
-        //DEFINE O ARRAY COM AS MATÉRIAS
-        setMatters([
-            { titleMateria: 'fisíca',  background: 0 },
-            { titleMateria: 'história',  background: 1 },
-            { titleMateria: 'inglês',  background: 2 },
-            { titleMateria: 'geografia',  background: 3 },
-            { titleMateria: 'artes',  background: 4 },
-            { titleMateria: 'português',  background: 5 },
-            { titleMateria: 'química',  background: 6 },
-            { titleMateria: 'biologia',  background: 7 },
-            { titleMateria: 'matemática',  background: 8 },
+         //DEFINE O ARRAY COM AS CONQUISTAS
+         setExercises([
+            { concluded: false, materia: 'português', title: 'museu do ipiranga', type: 'travel' },
+            { concluded: true, materia: 'geografia', title: 'museu do ipiranga', type: 'travel' },
+            { concluded: false, materia: 'filosofia', title: 'museu do ipiranga', type: 'travel' },
+            { concluded: false, materia: 'inglês', title: 'museu do ipiranga', type: 'travel' },
+            { concluded: true, materia: 'história', title: 'museu do ipiranga', type: 'travel' },
+            { concluded: true, materia: 'biologia', title: 'museu do terraplanismo', type: 'travel' },
+            { concluded: false, materia: 'português', title: 'museu do ipiranga', type: 'travel' },
+            { concluded: true, materia: 'fuvest', title: 'fazer simulado de matemática', type: 'exercise' },
+            { concluded: false, materia: 'enem', title: 'fazer simulado de matemática', type: 'exercise' },
+            { concluded: false, materia: 'fuvest', title: 'fazer simulado de matemática', type: 'exercise' },
+            { concluded: true, materia: 'fuvest', title: 'fazer simulado de matemática', type: 'exercise' },
+            { concluded: true, materia: 'unesp', title: 'fazer simulado de matemática', type: 'exercise' },
+            { concluded: false, materia: 'ufpa', title: 'fazer simulado de matemática', type: 'exercise' },
+            { concluded: false, materia: 'unesp', title: 'fazer simulado de matemática', type: 'exercise' },
+            { concluded: true, materia: 'uerj', title: 'fazer simulado de história', type: 'exercise' },
         ])
     },[])
 
@@ -103,7 +111,7 @@ export const Materias:React.FC<Props> = ({ navigation }) => {
                 
                 <View className={`w-[90%] mt-8 justify-center flex flex-row items-center mb-5`}>
                     <Return event={() => navigation.goBack()} />
-                    <TitlePage text="matérias" />
+                    <TitlePage text="exercicios" />
                     <MenuButton />
                 </View>
 
@@ -112,14 +120,22 @@ export const Materias:React.FC<Props> = ({ navigation }) => {
                     style={{ minWidth: '100%', maxHeight: '83.42%' }}
                 >
                     <View className={`w-[100%] flex flex-col items-center justify-start`}>
-                        {matters.map((mat, i) => (
-                            <MaterialCard titleMateria={mat.titleMateria} background={mat.background} key={i} />
-                        ))}
+                        <Text className={`pl-[10px] capitalize text-left w-full text-[18px] my-2 ${theme == 'light' ? 'text-my-gray' : 'text-my-gray-black'}`}>passeios</Text> 
+
+                        {exercises.map((exerc, i) => 
+                            exerc.type == 'travel' ? (<ExerciseCard concluded={exerc.concluded} materia={exerc.materia} title={exerc.title} type={exerc.type} key={i} />):(<></>)
+                        )}
+                        
+                        <Text className={`pl-[10px] capitalize text-left w-full text-[18px] my-2 ${theme == 'light' ? 'text-my-gray' : 'text-my-gray-black'}`}>simulados</Text> 
+                        
+                        {exercises.map((exerc, i) => 
+                            exerc.type == 'exercise' ? (<ExerciseCard concluded={exerc.concluded} materia={exerc.materia} title={exerc.title} type={exerc.type} key={i} />):(<></>)
+                        )}
                     </View>
                 </ScrollView>
             </View>
             <BottomNavigation
-                route="home"
+                route="exercises"
                 eventH={() => navigation.navigate('Materias')}
                 eventMP={() => navigation.navigate('MyPerfil')}
                 eventE={() => navigation.navigate('Exercises')}

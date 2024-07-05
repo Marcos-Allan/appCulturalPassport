@@ -48,12 +48,12 @@ import TitlePage from "../../Components/TitlePage";
 import MenuButton from "../../Components/MenuButton";
 import Return from "../../Components/Return";
 import BottomNavigation from "../../Components/BottomNavigation";
-import MaterialCard from "../../Components/MaterialCard";
+import ConquestCard from "../../Components/ConquestCard";
 
 //TIPAGEEM DAS ROTAS
-type Props = StackScreenProps<RootStackParamList, 'Materias'>;
+type Props = StackScreenProps<RootStackParamList, 'Achievements'>;
 
-export const Materias:React.FC<Props> = ({ navigation }) => {
+export const Achievements:React.FC<Props> = ({ navigation }) => {
 
     //RESGATA AS VARIAVEIS GLOBAIS
     const states:any = useMyContext()
@@ -62,7 +62,7 @@ export const Materias:React.FC<Props> = ({ navigation }) => {
     const { theme, menuOpen, toggleMenuOpen } = states
 
     //UTILIZAÇÃO DO HOOK useState
-    const [matters, setMatters] = useState<any[]>([])
+    const [conquests, setConquests] = useState<any[]>([])
 
     //FUNÇÃO RESPONSÁVEL POR FECHAR O MENU SE ESTIVER ABERTO
     function closeMenu(){
@@ -81,17 +81,17 @@ export const Materias:React.FC<Props> = ({ navigation }) => {
 
     //FUNÇÃO CHAMADA TODA VEZ QUE CARREGA A PÁGINA
     useEffect(() => {
-        //DEFINE O ARRAY COM AS MATÉRIAS
-        setMatters([
-            { titleMateria: 'fisíca',  background: 0 },
-            { titleMateria: 'história',  background: 1 },
-            { titleMateria: 'inglês',  background: 2 },
-            { titleMateria: 'geografia',  background: 3 },
-            { titleMateria: 'artes',  background: 4 },
-            { titleMateria: 'português',  background: 5 },
-            { titleMateria: 'química',  background: 6 },
-            { titleMateria: 'biologia',  background: 7 },
-            { titleMateria: 'matemática',  background: 8 },
+        //DEFINE O ARRAY COM AS CONQUISTAS
+        setConquests([
+            { level: 2, message: 'próxima meta 365 dias', porcentage: 80, title: 'Day o cool' },
+            { level: 3, message: 'próxima meta 10x ao dia', porcentage: 100, title: 'First fap' },
+            { level: 2, message: 'sobreviver mais um dia', porcentage: 30, title: 'Survival day' },
+            { level: 2, message: 'sobreviver mais um dia', porcentage: 30, title: 'Survival day' },
+            { level: 2, message: 'sobreviver mais um dia', porcentage: 30, title: 'Survival day' },
+            { level: 2, message: 'sobreviver mais um dia', porcentage: 30, title: 'Survival day' },
+            { level: 2, message: 'sobreviver mais um dia', porcentage: 30, title: 'Survival day' },
+            { level: 2, message: 'sobreviver mais um dia', porcentage: 30, title: 'Survival day' },
+            { level: 2, message: 'sobreviver mais um dia', porcentage: 30, title: 'Winner !!' },
         ])
     },[])
 
@@ -112,14 +112,14 @@ export const Materias:React.FC<Props> = ({ navigation }) => {
                     style={{ minWidth: '100%', maxHeight: '83.42%' }}
                 >
                     <View className={`w-[100%] flex flex-col items-center justify-start`}>
-                        {matters.map((mat, i) => (
-                            <MaterialCard titleMateria={mat.titleMateria} background={mat.background} key={i} />
-                        ))}
+                    {conquests.map((conq, i) => (
+                        <ConquestCard level={conq.level} message={conq.message} porcentage={conq.porcentage} title={conq.title} key={i} />
+                    ))}
                     </View>
                 </ScrollView>
             </View>
             <BottomNavigation
-                route="home"
+                route="achievements"
                 eventH={() => navigation.navigate('Materias')}
                 eventMP={() => navigation.navigate('MyPerfil')}
                 eventE={() => navigation.navigate('Exercises')}
