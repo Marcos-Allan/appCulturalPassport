@@ -16,6 +16,8 @@ import { SwitchPassword } from './src/screens/SwitchPassword';
 import { MyPerfil } from './src/screens/MyPerfil';
 import { Materias } from './src/screens/Materias';
 import { Exercises } from './src/screens/Exercises';
+import { Achievements } from './src/screens/Achievements';
+import { Notifications } from './src/screens/Notifications';
 
 //IMPORTAÇÃO DO PROVEDOR DE ESTADOS GLOBAIS
 import { Provider } from './src/provider';
@@ -23,7 +25,6 @@ import { Provider } from './src/provider';
 //IMPORTAÇÃO DOS COMPONENTES
 import LoadingPage from './src/Components/LoadingPage';
 import Alert from './src/Components/Alert';
-import { Achievements } from './src/screens/Achievements';
 
 //TIPAGEM DAS PÁGINAS
 export type RootStackParamList = {
@@ -38,6 +39,7 @@ export type RootStackParamList = {
   Materias: undefined;
   Exercises: undefined;
   Achievements: undefined;
+  Notifications: undefined;
 };
 
 //CONFIGURAÇÃO DAS ROTAS DAS PÁGINAS COM A TIPAGEM DAS PRÓPRIAS
@@ -61,6 +63,7 @@ export default function App() {
             <Stack.Screen name="Materias" component={Materias} />
             <Stack.Screen name="Exercises" component={Exercises} />
             <Stack.Screen name="Achievements" component={Achievements} />
+            <Stack.Screen name="Notifications" component={Notifications} />
           </Stack.Navigator>
           <LoadingPage />
           <Alert />

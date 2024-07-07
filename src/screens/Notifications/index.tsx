@@ -28,10 +28,13 @@
  */
 
 //IMPORTAÇÃO DOS COMPONENTES NATIVOS
-import { View, Pressable, ScrollView } from "react-native";
+import { View, Pressable, Text, ScrollView } from "react-native";
 
 //IMPORTAÇÃO DAS BIBLIOTECAS
 import { useState, useEffect } from "react";
+
+//IMPORTAÇÃO DOS ICONES
+import { Ionicons } from '@expo/vector-icons';
 
 //IMPORTAÇÃO DO PROVEDOR PARA PEGAR AS VARIÁVEIS GLOBAIS
 import { useMyContext } from "../../provider/geral";
@@ -48,12 +51,13 @@ import TitlePage from "../../Components/TitlePage";
 import MenuButton from "../../Components/MenuButton";
 import Return from "../../Components/Return";
 import BottomNavigation from "../../Components/BottomNavigation";
-import ConquestCard from "../../Components/ConquestCard";
+import NotificationCard from "../../Components/NotificationCard";
+import MyText from "../../Components/MyText";
 
 //TIPAGEEM DAS ROTAS
-type Props = StackScreenProps<RootStackParamList, 'Achievements'>;
+type Props = StackScreenProps<RootStackParamList, 'Notifications'>;
 
-export const Achievements:React.FC<Props> = ({ navigation }) => {
+export const Notifications:React.FC<Props> = ({ navigation }) => {
 
     //RESGATA AS VARIAVEIS GLOBAIS
     const states:any = useMyContext()
@@ -61,8 +65,8 @@ export const Achievements:React.FC<Props> = ({ navigation }) => {
     //DESESTRUTURA AS VARIAVEIS ESPECIFICADAS
     const { theme, menuOpen, toggleMenuOpen } = states
 
-    //UTILIZAÇÃO DO HOOK useState
-    const [conquests, setConquests] = useState<any[]>([])
+    //UTILIZA O HOOK DO useState
+    const [notification, setNotification] = useState<any[]>([])
 
     //FUNÇÃO RESPONSÁVEL POR FECHAR O MENU SE ESTIVER ABERTO
     function closeMenu(){
@@ -79,19 +83,41 @@ export const Achievements:React.FC<Props> = ({ navigation }) => {
 
     },[])
 
+    //FUNÇÃO RESPONSÁVEL POR REMOVER A NOTIFICAÇÃO DA TELA
+    function removeNotify(itemRemoved : { materia: string, content: string, isClosed: boolean }) {
+        //VÊ QUAL ITEM VAI SER REMOVIDO E ADICIONA A ANIMAÇÃO DE REMOÇÃO
+        const updatedArr = notification.map((not) => 
+            not.content === itemRemoved.content ? { ...not, isClosed: true } : not
+        )
+
+        //ATUALIZA A LISTA DE NOTIFICAÇÕES COM AS MODIFICAÇÕES
+        setNotification(updatedArr)
+
+        //FUNÇÃO CHAMADA DEPOIS DE .4 SEGUNDOS
+        setTimeout(() => {
+            //REMOVE A NOTIFICAÇÃO DO ARRAY
+            setNotification((nots) =>
+            nots.filter(item => item.content !== itemRemoved.content))
+        }, 400);
+    }
+
     //FUNÇÃO CHAMADA TODA VEZ QUE CARREGA A PÁGINA
     useEffect(() => {
-        //DEFINE O ARRAY COM AS CONQUISTAS
-        setConquests([
-            { level: 2, message: 'próxima meta 365 dias', porcentage: 80, title: 'Day o cool' },
-            { level: 3, message: 'próxima meta 10x ao dia', porcentage: 100, title: 'First fap' },
-            { level: 2, message: 'sobreviver mais um dia', porcentage: 30, title: 'Survival day' },
-            { level: 2, message: 'sobreviver mais um dia', porcentage: 30, title: 'Survival day' },
-            { level: 2, message: 'sobreviver mais um dia', porcentage: 30, title: 'Survival day' },
-            { level: 2, message: 'sobreviver mais um dia', porcentage: 30, title: 'Survival day' },
-            { level: 2, message: 'sobreviver mais um dia', porcentage: 30, title: 'Survival day' },
-            { level: 2, message: 'sobreviver mais um dia', porcentage: 30, title: 'Survival day' },
-            { level: 2, message: 'sobreviver mais um dia', porcentage: 30, title: 'Winner !!' },
+        //DEFINE O ARRAY COM AS NOTIFICAÇÕES
+        setNotification([
+            { materia: 'quimica', content: 'aprender a fazer sal', isClosed: false},
+            { materia: 'matemática', content: 'porcentagem', isClosed: false},
+            { materia: 'português', content: 'verbos', isClosed: false},
+            { materia: 'filosofia', content: 'sócrates', isClosed: false},
+            { materia: 'sociologia', content: 'socialismo x comunismo', isClosed: false},
+            { materia: 'biologia', content: 'oviviparo', isClosed: false},
+            { materia: 'quimica', content: 'química orgânica', isClosed: false},
+            { materia: 'geografia', content: 'poluição ambiental', isClosed: false},
+            { materia: 'quimica', content: 'poluição ambiental', isClosed: false},
+            { materia: 'português', content: 'poluição ambiental', isClosed: false},
+            { materia: 'filosofia', content: 'poluição ambiental', isClosed: false},
+            { materia: 'sociologia', content: 'poluição ambiental', isClosed: false},
+            { materia: 'biologia', content: 'poluição ambiental', isClosed: false},
         ])
     },[])
 
@@ -103,7 +129,7 @@ export const Achievements:React.FC<Props> = ({ navigation }) => {
                 
                 <View className={`w-[90%] mt-8 justify-center flex flex-row items-center mb-5`}>
                     <Return event={() => navigation.goBack()} />
-                    <TitlePage text="matérias" />
+                    <TitlePage text="Notificações" />
                     <MenuButton />
                 </View>
 
@@ -112,14 +138,23 @@ export const Achievements:React.FC<Props> = ({ navigation }) => {
                     style={{ minWidth: '100%', maxHeight: '83.42%' }}
                 >
                     <View className={`w-[100%] flex flex-col items-center justify-start`}>
-                    {conquests.map((conq, i) => (
-                        <ConquestCard level={conq.level} message={conq.message} porcentage={conq.porcentage} title={conq.title} key={i} />
-                    ))}
+                    {notification.length >= 1 ? notification.map((not, i) => (
+                    <NotificationCard materia={not.materia} content={not.content}
+                        event={() => removeNotify({materia: not.materia, content: not.content, isClosed: not.isClosed })} key={i} isClosed={not.isClosed}
+                    />
+                    )):(
+                        <View className='w-full flex flex-col items-center'>
+                            <MyText text="Nenhuma Notificação Recebida" />
+                            <View className="mt-6">
+                                <Ionicons name='happy-outline' size={160} color={`${theme == 'light' ? '#818181' : '#C0C0C0'}`} />
+                            </View>
+                        </View>
+                    )}
                     </View>
                 </ScrollView>
             </View>
             <BottomNavigation
-                route="achievements"
+                route="notifications"
                 eventH={() => navigation.navigate('Materias')}
                 eventMP={() => navigation.navigate('MyPerfil')}
                 eventE={() => navigation.navigate('Exercises')}

@@ -227,6 +227,7 @@ export const MyPerfil:React.FC<Props> = ({ navigation }) => {
                 eventMP={() => navigation.navigate('MyPerfil')}
                 eventE={() => navigation.navigate('Exercises')}
                 eventA={() => navigation.navigate('Achievements')}
+                eventN={() => navigation.navigate('Notifications')}
             />
             <Menu event={() => navigation.navigate('MyPerfil')} />
         </Pressable>

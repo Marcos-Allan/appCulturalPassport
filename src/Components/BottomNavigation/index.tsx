@@ -11,6 +11,7 @@ interface Props {
     eventE: () => void
     eventMP: () => void
     eventA: () => void
+    eventN: () => void
 }
 
 export default function BottomNavigation(props: Props) {
@@ -50,7 +51,10 @@ export default function BottomNavigation(props: Props) {
                 </View>
                 <Text className={`text-my-white text-[8px] font-medium capitalize`}>chat</Text>
             </Pressable>
-            <Pressable className={`flex items-center felx-col gap-[6px]`}>
+            <Pressable
+                onPress={() => props.eventN()}
+                className={`flex items-center felx-col gap-[6px]`}
+            >
                 <View className={`w-[42px] h-[42px] flex items-center justify-center ${props.route == 'notifications' && 'bg-my-terciary'} p-[6px] rounded-[50px]`}>
                     <Ionicons name='notifications-outline' size={26} color={'white'} />
                 </View>
