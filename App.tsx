@@ -18,6 +18,8 @@ import { Materias } from './src/screens/Materias';
 import { Exercises } from './src/screens/Exercises';
 import { Achievements } from './src/screens/Achievements';
 import { Notifications } from './src/screens/Notifications';
+import { Exams } from './src/screens/Exams';
+import { Matter } from './src/screens/Matter';
 
 //IMPORTAÇÃO DO PROVEDOR DE ESTADOS GLOBAIS
 import { Provider } from './src/provider';
@@ -25,6 +27,7 @@ import { Provider } from './src/provider';
 //IMPORTAÇÃO DOS COMPONENTES
 import LoadingPage from './src/Components/LoadingPage';
 import Alert from './src/Components/Alert';
+import { Test } from './src/screens/Test';
 
 //TIPAGEM DAS PÁGINAS
 export type RootStackParamList = {
@@ -40,6 +43,9 @@ export type RootStackParamList = {
   Exercises: undefined;
   Achievements: undefined;
   Notifications: undefined;
+  Exams: { matterName: string };
+  Matter: { matterName: string, examName: string };
+  Test: { matterName: string };
 };
 
 //CONFIGURAÇÃO DAS ROTAS DAS PÁGINAS COM A TIPAGEM DAS PRÓPRIAS
@@ -64,6 +70,9 @@ export default function App() {
             <Stack.Screen name="Exercises" component={Exercises} />
             <Stack.Screen name="Achievements" component={Achievements} />
             <Stack.Screen name="Notifications" component={Notifications} />
+            <Stack.Screen name="Exams" component={Exams} />
+            <Stack.Screen name="Matter" component={Matter} />
+            <Stack.Screen name="Test" component={Test} />
           </Stack.Navigator>
           <LoadingPage />
           <Alert />

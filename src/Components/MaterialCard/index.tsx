@@ -28,7 +28,7 @@
  */
 
 //IMPORTAÇÃO DOS COMPONENTES NATIVOS
-import { View, Text } from 'react-native'
+import { View, Text, Pressable } from 'react-native'
 
 //IMPORTAÇÃO DAS BIBLIOTECAS
 import { useState, useEffect } from 'react'
@@ -37,6 +37,7 @@ import { useState, useEffect } from 'react'
 interface Props {
     background: Number,
     titleMateria: String,
+    event: () => void
 }
 
 export default function MaterialCard(props: Props) {
@@ -60,7 +61,8 @@ export default function MaterialCard(props: Props) {
     },[])
     
     return(
-        <View
+        <Pressable
+            onPress={() => props.event()}
             className={`relative mb-[15px] w-[100%] h-[100px] rounded-[8px] p-3`}
             style={{ backgroundColor: `${colors[Number(props.background)]}` }}
         >
@@ -73,6 +75,6 @@ export default function MaterialCard(props: Props) {
             >
             </View>
             
-        </View>
+        </Pressable>
     )
 }

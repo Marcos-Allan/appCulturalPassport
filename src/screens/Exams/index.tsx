@@ -28,7 +28,7 @@
  */
 
 //IMPORTAÇÃO DOS COMPONENTES NATIVOS
-import { View, Pressable, ScrollView } from "react-native";
+import { View, Pressable, ScrollView, Text } from "react-native";
 
 //IMPORTAÇÃO DAS BIBLIOTECAS
 import { useState, useEffect } from "react";
@@ -48,12 +48,15 @@ import TitlePage from "../../Components/TitlePage";
 import MenuButton from "../../Components/MenuButton";
 import Return from "../../Components/Return";
 import BottomNavigation from "../../Components/BottomNavigation";
-import MaterialCard from "../../Components/MaterialCard";
+import ContentCard from "../../Components/ContentCard";
 
 //TIPAGEEM DAS ROTAS
-type Props = StackScreenProps<RootStackParamList, 'Materias'>;
+type Props = StackScreenProps<RootStackParamList, 'Exams'>;
 
-export const Materias:React.FC<Props> = ({ navigation }) => {
+export const Exams:React.FC<Props> = ({ navigation, route }) => {
+
+    //PEGA OS PARAMETROS PASSADOS PARA A PÁGINA
+    const { matterName } = route.params
 
     //RESGATA AS VARIAVEIS GLOBAIS
     const states:any = useMyContext()
@@ -62,7 +65,7 @@ export const Materias:React.FC<Props> = ({ navigation }) => {
     const { theme, menuOpen, toggleMenuOpen } = states
 
     //UTILIZAÇÃO DO HOOK useState
-    const [matters, setMatters] = useState<any[]>([])
+    const [content, setContent] = useState<any[]>([])
 
     //FUNÇÃO RESPONSÁVEL POR FECHAR O MENU SE ESTIVER ABERTO
     function closeMenu(){
@@ -79,19 +82,30 @@ export const Materias:React.FC<Props> = ({ navigation }) => {
 
     },[])
 
+    //FUNÇÃO PARA REDIRECIONAR PARA OUTRA PÁGINA
+    function redirect(vest:string){
+
+        //FORMATA O CAMPO PARA DEIXAR APENAS AS INICIAIS DO VESTIBULAR
+        // const vestibular = vest.split(' ')[0].toLowerCase()
+
+        //NAVEGA PARA A PRÓXIMA PÁGINA
+        // navigate(`/materias/${matter}/${vestibular}`)
+
+        console.log('uiii')
+    }
+
     //FUNÇÃO CHAMADA TODA VEZ QUE CARREGA A PÁGINA
     useEffect(() => {
-        //DEFINE O ARRAY COM AS MATÉRIAS
-        setMatters([
-            { titleMateria: 'fisíca',  background: 0 },
-            { titleMateria: 'história',  background: 1 },
-            { titleMateria: 'inglês',  background: 2 },
-            { titleMateria: 'geografia',  background: 3 },
-            { titleMateria: 'artes',  background: 4 },
-            { titleMateria: 'português',  background: 5 },
-            { titleMateria: 'química',  background: 6 },
-            { titleMateria: 'biologia',  background: 7 },
-            { titleMateria: 'matemática',  background: 8 },
+        //DEFINE O ARRAY COM OS CONTEUDOS
+        setContent([
+            { title: 'Enem (Exame Nacional do Ensino Médio)', background: 0 },
+            { title: 'Fuvest (Fundação Universitária para o vestibular)', background: 1 },
+            { title: 'UFPA (Universidade Federal do Pará)', background: 2 },
+            { title: 'Unesp (Universidade Estadual Paulista)', background: 3 },
+            { title: 'UEPA (Universidade Estadual do Pará)', background: 4 },
+            { title: 'UERJ (Universidade Estadual do Rio de Janeiro)', background: 5 },
+            { title: 'Unicamp (Universidade Estadual de Campinas)', background: 6 },
+            { title: 'UFPR (Universidade Federal do Paraná)', background: 7 }
         ])
     },[])
 
@@ -103,22 +117,23 @@ export const Materias:React.FC<Props> = ({ navigation }) => {
                 
                 <View className={`w-[90%] mt-8 justify-center flex flex-row items-center mb-5`}>
                     <Return event={() => navigation.goBack()} />
-                    <TitlePage text="matérias" />
+                    <TitlePage text={`${matterName}`} />
                     <MenuButton />
                 </View>
 
+                <Text className={` mb-[20px] text-center text-[16px] ${theme == 'light' ? 'text-my-black' : 'text-my-white'}`}>Escolha um vestibular de sua preferência</Text>
+
                 <ScrollView
                     contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-start', alignItems: 'center' }}
-                    style={{ minWidth: '100%', maxHeight: '83.42%' }}
+                    style={{ minWidth: '100%', maxHeight: '77.7%' }}
                 >
                     <View className={`w-[100%] flex flex-col items-center justify-start`}>
-                        {matters.map((mat, i) => (
-                            <MaterialCard
-                                titleMateria={mat.titleMateria}
-                                background={mat.background}
-                                event={() => navigation.navigate('Exams', { matterName: mat.titleMateria })}
-                                key={i}
-                            />
+                        {content.map((cont, i) => (
+                            <ContentCard
+                                background={cont.background}
+                                title={cont.title}
+                                event={() => navigation.navigate('Matter', { matterName: matterName, examName: cont.title.split(' ')[0] })}
+                                key={i} />
                         ))}
                     </View>
                 </ScrollView>
