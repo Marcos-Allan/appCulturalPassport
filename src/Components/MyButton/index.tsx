@@ -30,6 +30,9 @@
 //IMPORTAÇÃO DOS COMPONENTES NATIVOS
 import { Pressable, Text } from "react-native";
 
+//IMPORTAÇÃO DAS BIBLIOTECAS
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated'
+
 //IMPORTAÇÃO DO PROVEDOR PARA PEGAR AS VARIÁVEIS GLOBAIS
 import { useMyContext } from "../../provider/geral";
 
@@ -57,16 +60,59 @@ export default function MyButton(props: Props) {
         props.event && props.event()
     }
 
+    //CRIA UMA REFERÊNCIA PARA O ESTADO DA ANIMAÇÃO
+    const scaleValue = useSharedValue(1)
+
+    //FUNÇÃO CHAMADA AO CLICAR NO COMPONENTE
+    const handleButtonClick = () => {
+        //EXECUTA A ANIMAÇÃO
+        scaleValue.value = withTiming(0.8, { duration: 300 });
+
+        //FUNÇÃO CHAMADA APÓS 0.3 SEGUNDOS
+        setTimeout(() => {
+            //VOLTA O COMPONENTE PARA O ESTADO ORIGINAL
+            scaleValue.value = withTiming(1, { duration: 150 });
+        }, 300);
+    };
+
+    //CRIA UM ESTILO ANIMADO DPENDENDO DO DO VALOR DA VARIÁVEL DE REFERÊNCIA
+    const animatedStyle = useAnimatedStyle(() => {
+        return {
+            transform: [
+                { scale: scaleValue.value },
+            ]
+        }
+    })
+
     return(
         <Pressable
-            className={`w-[90%] py-3 mt-2 mb-3 flex justify-center rounded-[12px]
-            ${theme == 'light' ? 'bg-my-primary' : 'bg-my-secondary'}
-            ${props.disabled == true && `${theme == 'light' ? 'bg-my-primary' : 'bg-my-secondary'}`}
-            ${props.disabled == false && `${theme == 'light' ? 'bg-my-gray' : 'bg-my-gray-black'}`}
-            `}
-            onPress={myFunction}
+            className={`w-[90%]`}
+            onPress={() => {
+                handleButtonClick()
+                setTimeout(() => {
+                    myFunction()
+                }, 375);
+            }}
         >
-            <Text className={`text-[20px] font-medium text-center capitalize ${theme == 'light' ? 'text-my-white' : 'text-my-black'}`}>{props.text}</Text>
+            <Animated.View
+                style={[{
+                    width: '100%',
+                    paddingVertical: 16,
+                    marginTop: 8,
+                    marginBottom: 12,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    borderRadius: 12,
+                }, animatedStyle]}
+
+                className={`
+                    ${theme == 'light' ? 'bg-my-primary' : 'bg-my-secondary'}
+                    ${props.disabled == true && `${theme == 'light' ? 'bg-my-primary' : 'bg-my-secondary'}`}
+                    ${props.disabled == false && `${theme == 'light' ? 'bg-my-gray' : 'bg-my-gray-black'}`}
+                `}
+            >
+                <Text className={`text-[20px] font-medium text-center capitalize ${theme == 'light' ? 'text-my-white' : 'text-my-black'}`}>{props.text}</Text>  
+            </Animated.View>
         </Pressable>
     )
 }

@@ -1,6 +1,10 @@
 //IMPORTAÇÃO DOS COMPONENTES NATIVOS
 import { Pressable, Text } from 'react-native'
 
+//IMPORTAÇÃO DAS BIBLIOTECAS
+import { useState, useEffect } from 'react'
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, runOnJS } from 'react-native-reanimated'
+
 //TIPAGEM DAS PROPS DO COMPONENTE
 interface Props {
     background: number,
@@ -20,18 +24,70 @@ export default function ContentCard(props: Props) {
     //DESESTRUTURA AS VARIAVEIS ESPECIFICADAS
     const { theme } = states
 
+    //UTILIAÇÃO DO HOOK useState
+    const [color, setColor] = useState<string>('')
+
+    //CRIA UMA REFERÊNCIA PARA O ESTADO DA ANIMAÇÃO
+    const scaleValue = useSharedValue(1)
+
+    //FUNÇÃO CHAMADA AO CLICAR NO COMPONENTE
+    const handleButtonClick = () => {
+        //EXECUTA A ANIMAÇÃO
+        scaleValue.value = withTiming(0.8, { duration: 300 });
+
+        //FUNÇÃO CHAMADA APÓS 0.3 SEGUNDOS
+        setTimeout(() => {
+            //VOLTA O COMPONENTE PARA O ESTADO ORIGINAL
+            scaleValue.value = withTiming(1, { duration: 150 });
+        }, 300);
+    };
+
+    //CRIA UM ESTILO ANIMADO DPENDENDO DO DO VALOR DA VARIÁVEL DE REFERÊNCIA
+    const animatedStyle = useAnimatedStyle(() => {
+        return {
+            transform: [
+                { scale: scaleValue.value },
+            ]
+        }
+    })
+
+    //FUNÇÃO CHAMADA AO CARREGAR A PAGINA
+    useEffect(() => {
+        //VERIFICA QUAL A COR ESCOLHIDA PARA O BACKGROUND
+        if(props.background == 0 || props.background == 3 || props.background == 6){
+            setColor('#010E26')
+        }else if(props.background == 1 || props.background == 4 || props.background == 7){
+            setColor('#445EF2')
+        }else{
+            setColor('#263973')
+        }
+    },[])
+
     return(
         <Pressable
             onPress={() => {
-                props.event && props.event()
+                handleButtonClick()
+                setTimeout(() => {
+                    props.event && props.event()
+                }, 375);
             }}
-            className={`w-full mb-4 flex justify-center rounded-[24px] py-4 border-2
-            ${theme == 'light' ? 'border-my-black' : 'border-my-white'}
-            ${props.background == 0 || props.background == 3 || props.background == 6 ? 'bg-my-primary' : ''}
-            ${props.background == 1 || props.background == 4 || props.background == 7 ? 'bg-my-secondary' : ''}
-            ${props.background == 2 || props.background == 5 || props.background == 8 ? 'bg-my-terciary' : ''}
-        `}>
-            <Text className={`capitalize font-semibold text-[18px] text-my-white text-center`}>{props.title}</Text>
+            className={`w-full`}>
+            <Animated.View
+                style={[{
+                    width: '100%',
+                    marginBottom: 12,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    borderRadius: 24,
+                    paddingTop: 20,
+                    paddingBottom: 20,
+                    borderWidth: 2,
+                    borderColor: `${theme == 'light' ? '#000000' : '#ffffff'}`,
+                    backgroundColor: `${color}`
+                }, animatedStyle]}
+            >
+                <Text className={`capitalize font-semibold text-[18px] text-my-white text-center`}>{props.title}</Text>
+            </Animated.View>
         </Pressable>
     )
 }

@@ -32,6 +32,7 @@ import { View, Text, Pressable } from 'react-native'
 
 //IMPORTAÇÃO DAS BIBLIOTECAS
 import { useState, useEffect } from 'react'
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated'
 
 //TIPAGEM DAS PROPRIEDADES DO COMPONENTE
 interface Props {
@@ -44,14 +45,14 @@ export default function MaterialCard(props: Props) {
     
     //USO DO HOOK useState
     const [colors, setColors] = useState<String[]>([
-        '#52bd9b', //0
-        '#c47e3d', //1
-        '#e41c1c', //2
-        '#eeee1b', //3
-        '#e843f1', //4
-        '#987dd0', //5
-        '#c66193', //6
-        '#38da56', //7
+        '#52bd9b',
+        '#c47e3d',
+        '#e41c1c',
+        '#eeee1b',
+        '#e843f1',
+        '#987dd0',
+        '#c66193',
+        '#38da56',
     ])
 
     //FUNÇÃO CHAMADA AO RECARREGAR A PÁGINA
@@ -59,21 +60,62 @@ export default function MaterialCard(props: Props) {
         //COLOCA UMA NOVA COR NO ARRAY DE CORES
         setColors((colors) => [...colors, '#527fef'])
     },[])
+
+    //CRIA UMA REFERÊNCIA PARA O ESTADO DA ANIMAÇÃO
+    const scaleValue = useSharedValue(1)
+
+    //FUNÇÃO CHAMADA AO CLICAR NO COMPONENTE
+    const handleButtonClick = () => {
+        //EXECUTA A ANIMAÇÃO
+        scaleValue.value = withTiming(0.8, { duration: 300 });
+
+        //FUNÇÃO CHAMADA APÓS 0.3 SEGUNDOS
+        setTimeout(() => {
+            //VOLTA O COMPONENTE PARA O ESTADO ORIGINAL
+            scaleValue.value = withTiming(1, { duration: 150 });
+        }, 300);
+    };
+
+    //CRIA UM ESTILO ANIMADO DPENDENDO DO DO VALOR DA VARIÁVEL DE REFERÊNCIA
+    const animatedStyle = useAnimatedStyle(() => {
+        return {
+            transform: [
+                // { scale: scaleValue.value ? withTiming(1, { duration: 300 }) : withTiming(0.8, { duration: 300 }) },
+                { scale: scaleValue.value },
+            ]
+        }
+    })
     
     return(
         <Pressable
-            onPress={() => props.event()}
-            className={`relative mb-[15px] w-[100%] h-[100px] rounded-[8px] p-3`}
-            style={{ backgroundColor: `${colors[Number(props.background)]}` }}
+            onPress={() => {
+                handleButtonClick()
+                setTimeout(() => {
+                    props.event()
+                }, 375);
+            }}
+            className={`mb-[10px] w-[100%] mt-[10px]`}
         >
-            <Text className={`text-[22px] text-my-white font-semibold capitalize`}>{props.titleMateria}</Text>
-
-            <View
-                className={`rounded-[25px] w-[50px] h-[50px] absolute bottom-[-12%] right-[5%] border-[3px] bg-my-white
-                `}
-                style={{ borderColor: `${colors[Number(props.background)]}` }}
+            <Animated.View
+                style={[{
+                    position: 'relative',
+                    marginBottom: 0,
+                    width: '100%',
+                    height: 100,
+                    borderRadius: 8,
+                    padding: 12,
+                    backgroundColor: `${colors[Number(props.background)]}`
+                }, animatedStyle]}
             >
-            </View>
+                <Text className={`text-[22px] text-my-white font-semibold capitalize`}>{props.titleMateria}</Text>
+
+                <View
+                    className={`rounded-[25px] w-[50px] h-[50px] absolute bottom-[-12%] right-[5%] border-[3px] bg-my-white
+                    `}
+                    style={{ borderColor: `${colors[Number(props.background)]}` }}
+                >
+                </View>
+            </Animated.View>
             
         </Pressable>
     )

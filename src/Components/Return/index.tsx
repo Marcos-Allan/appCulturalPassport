@@ -33,6 +33,9 @@ import { Pressable } from 'react-native'
 //IMPORTAÇÃO DOS ICONES
 import { Ionicons } from '@expo/vector-icons';
 
+//IMPORTAÇÃO DAS BIBLIOTECAS
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated'
+
 //IMPORTAÇÃO DO PROVEDOR PARA PEGAR AS VARIÁVEIS GLOBAIS
 import { useMyContext } from "../../provider/geral";
 
@@ -49,9 +52,40 @@ export default function Return(props: Props) {
     //DESESTRUTURA AS VARIAVEIS ESPECIFICADAS
     const { theme } = states
 
+    //CRIA UMA REFERÊNCIA PARA O ESTADO DA ANIMAÇÃO
+    const translate_x = useSharedValue(0)
+
+    //FUNÇÃO CHAMADA AO CLICAR NO COMPONENTE
+    const handleButtonClick = () => {
+        //EXECUTA A ANIMAÇÃO
+        translate_x.value = withTiming(-25, { duration: 300 });
+
+        //FUNÇÃO CHAMADA APÓS 0.3 SEGUNDOS
+        setTimeout(() => {
+            //VOLTA O COMPONENTE PARA O ESTADO ORIGINAL
+            translate_x.value = withTiming(0, { duration: 150 });
+        }, 300);
+    };
+
+    //CRIA UM ESTILO ANIMADO DPENDENDO DO DO VALOR DA VARIÁVEL DE REFERÊNCIA
+    const animatedStyle = useAnimatedStyle(() => {
+        return {
+            transform: [
+                { translateX: translate_x.value },
+            ]
+        }
+    })
+
     return(
-        <Pressable onPress={() => props.event && props.event()}>
-            <Ionicons name='arrow-back' size={40} color={`${theme == 'light' ? 'black' : 'white'}`} />
+        <Pressable onPress={() => {
+            handleButtonClick()
+            setTimeout(() => {
+                props.event && props.event()
+            }, 375);
+        }}>
+            <Animated.View style={[{}, animatedStyle]}>
+                <Ionicons name='arrow-back' size={40} color={`${theme == 'light' ? 'black' : 'white'}`} />
+            </Animated.View>
         </Pressable>
     )
 }

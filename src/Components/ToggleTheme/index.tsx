@@ -42,10 +42,13 @@ export default function ToggleTheme() {
     const states:any = useMyContext()
 
     //DESESTRUTURA AS VARIAVEIS ESPECIFICADAS
-    const { theme, toggleTheme } = states
+    const { theme, toggleTheme, toggleMenuOpen } = states
 
     return(
-        <Pressable className={`w-full flex flex-row items-center gap-[10px] px-3 py-5`} onPress={() => toggleTheme()}>
+        <Pressable className={`w-full flex flex-row items-center gap-[10px] px-3 py-5`} onPress={() => {
+            toggleMenuOpen()
+            toggleTheme()
+        }}>
             {theme == 'light' ? (
                 <Ionicons name='sunny-outline' size={40} color={`white`} />
             ) : (
