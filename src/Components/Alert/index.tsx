@@ -30,6 +30,10 @@
 //IMPORTAÇÃO DOS COMPONENTES NATIVOS
 import { View, Text } from 'react-native'
 
+//IMPORTAÇÃO DAS BIBLIOTECAS
+import { useEffect } from "react";
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated'
+
 //IMPORTAÇÃO DO PROVEDOR PARA PEGAR AS VARIÁVEIS GLOBAIS
 import { useMyContext } from "../../provider/geral";
 
@@ -39,24 +43,43 @@ export default function Alert() {
     const states:any = useMyContext()
 
     //DESESTRUTURA AS VARIAVEIS ESPECIFICADAS
-    const { theme, message, toggleAlert } = states
+    const { theme, message } = states
+
+    //CRIA UMA REFERÊNCIA PARA O ESTADO DA ANIMAÇÃO
+    const leftPosition = useSharedValue(message.isVisible)
+
+    //CRIA UM ESTILO ANIMADO DPENDENDO DO DO VALOR DA VARIÁVEL DE REFERÊNCIA
+    const animatedStyle = useAnimatedStyle(() => {
+        return {
+            transform: [{ translateX: leftPosition.value == false ? withTiming(0, { duration: 0 }) : withTiming(-370, { duration: 5500 }) }]
+        }
+    })
+
+    //FUNÇÃO RESPONSÁVEL POR ATUALIZAR O VALOR DA ANIMAÇÃO
+    useEffect(() => {
+        leftPosition.value = message.isVisible
+    },[message.isVisible])
 
     return(
         <>
-        {message.isVisible == true && (
-            <View className={`absolute top-0 w-full flex flex-col items-center justify-center pt-3 z-[2]`}>
-                <View className={`w-[90%] pt-[20px] pb-[26px] border-[1px] flex flex-col justify-center items-center overflow-hidden rounded-[12px] ${theme == 'light' ? 'bg-my-white border-my-black' : 'border-my-white bg-my-black'}`}>
-                    <Text className={`${theme == 'light' ? 'text-my-black' : 'text-my-white'}`}>{message.text}</Text>
-                    <View
-                        className={`w-full h-[15px] absolute bottom-0
-                            ${message.type == 'success' && 'bg-[#84cd8e]'}
-                            ${message.type == 'error' && 'bg-[#e64f4f]'}
-                        `}
-                    >
+            {message.isVisible == true && (
+                <View className={`absolute top-0 w-full flex flex-col items-center justify-center pt-3 z-[2]`}>
+                    <View className={`relative w-[90%] pt-[20px] pb-[26px] border-[1px] flex flex-col justify-center items-center overflow-hidden rounded-[12px] ${theme == 'light' ? 'bg-my-white border-my-black' : 'border-my-white bg-my-black'}`}>
+                        <Text className={`${theme == 'light' ? 'text-my-black' : 'text-my-white'}`}>{message.text}</Text>
+                        <Animated.View
+                            style={[{
+                                width: '100%',
+                                height: 15,
+                                transform: 'translateX(0px)',
+                                position: 'absolute',
+                                bottom: 0,
+                                left: 0,
+                                backgroundColor: `${message.type == 'success' ? '#84cd8e' : '#e64f4f'}`,
+                            }, animatedStyle]}
+                        />
                     </View>
                 </View>
-            </View>
-        )}
+            )}
         </>
     )
 }

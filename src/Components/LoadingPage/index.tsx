@@ -30,6 +30,10 @@
 //IMPORTAÇÃO DOS COMPONENTES NATIVOS
 import { View } from 'react-native'
 
+//IMPORTAÇÃO DAS BIBLIOTECAS
+import { useEffect } from "react";
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, withRepeat, Easing } from 'react-native-reanimated'
+
 //IMPORTAÇÃO DO PROVEDOR PARA PEGAR AS VARIÁVEIS GLOBAIS
 import { useMyContext } from "../../provider/geral";
 
@@ -41,14 +45,40 @@ export default function LoadingPage() {
     //DESESTRUTURA AS VARIAVEIS ESPECIFICADAS
     const { theme, loading } = states
 
+    //CRIA UMA REFERÊNCIA PARA O ESTADO DA ANIMAÇÃO
+    const rotation = useSharedValue(0)
+
+    useEffect(() => {
+        rotation.value = withRepeat(withTiming(360, { duration: 650, easing: Easing.linear }), -1, false)
+    },[])
+
+    //CRIA UM ESTILO ANIMADO DPENDENDO DO DO VALOR DA VARIÁVEL DE REFERÊNCIA
+    const animatedStyle = useAnimatedStyle(() => {
+        return {
+            transform: [{ rotate:  `${rotation.value}deg` }]
+        }
+    })
+
     return(
         <>
             {loading == true && (
                 <View className={`w-screen h-screen absolute top-0 left-0 flex items-center justify-center z-[40] ${theme == 'light' ? 'bg-my-black-opacity' : 'bg-my-white-opacity'}`}>
-                    <View className={`
-                        w-[80px] h-[80px] bg-my-transparent rounded-[40px] border-[6px] border-t-transparent animate-spin
-                        ${theme == 'light' ? 'border-my-quartenary' : 'border-my-terciary'}
-                    `}></View>
+                    <Animated.View 
+                        style={[{
+                            width: 80,
+                            height: 80,
+                            borderRadius: 40,
+                            borderStyle: 'solid',
+                            borderTopWidth: 6,
+                            borderTopColor: `${theme == 'light' ? '#05C7F2' : '#263973'}`,
+                            borderLeftWidth: 6,
+                            borderLeftColor: `${theme == 'light' ? '#05C7F2' : '#263973'}`,
+                            borderRightWidth: 6,
+                            borderRightColor: `${theme == 'light' ? '#05C7F2' : '#263973'}`,
+                            borderBottomWidth: 6,
+                            borderBottomColor: '#00000001',
+                        }, animatedStyle]}
+                    />
                 </View> 
             )}
         </>

@@ -30,6 +30,10 @@
 //IMPORTAÇÃO DOS COMPONENTES NATIVOS
 import { View, Text, Image, Pressable } from "react-native";
 
+//IMPORTAÇÃO DAS BIBLIOTECAS
+import { useEffect } from "react";
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated'
+
 //IMPORTAÇÃO DO PROVEDOR PARA PEGAR AS VARIÁVEIS GLOBAIS
 import { useMyContext } from "../../provider/geral";
 
@@ -40,24 +44,47 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import ToggleTheme from "../ToggleTheme";
 import CloseButton from "../CloseMenu";
 
+//TIPAGEM DAS PROPS DO COMPONENTE
 interface Props {
     event: () => void
 }
 
 export default function Menu(props: Props) {
-    
+
     //RESGATA AS VARIAVEIS GLOBAIS
     const states:any = useMyContext()
-
+    
     //DESESTRUTURA AS VARIAVEIS ESPECIFICADAS
     const { theme, menuOpen, userS } = states
+    
+    //CRIA UMA REFERÊNCIA PARA O ESTADO DA ANIMAÇÃO
+    const isSlideLeft = useSharedValue(menuOpen)
+
+    //CRIA UM ESTILO ANIMADO DPENDENDO DO DO VALOR DA VARIÁVEL DE REFERÊNCIA
+    const animatedStyle = useAnimatedStyle(() => {
+        return {
+            transform: [{ translateX: isSlideLeft.value ? withTiming(0, { duration: 350 }) : withTiming(-300, { duration: 350 }) }]
+        }
+    })
+
+    //FUNÇÃO RESPONSÁVEL POR ATUALIZAR O VALOR DA ANIMAÇÃO
+    useEffect(() => {
+        isSlideLeft.value = menuOpen
+    },[menuOpen])
 
     return(
-        <View
-            className={`absolute top-0 left-0 transition-all duration-[2s] w-[300px] z-[2] h-screen
-            ${menuOpen == true ? 'left-0' : 'left-[-300px]'}
-            ${theme == 'light' ? 'bg-my-black' : 'bg-my-white'}
-        `}>
+        <Animated.View
+            style={[{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: 300,
+                transform: 'translateX(-300px)',
+                zIndex: 2,
+                height: '100%',
+                backgroundColor: `${theme == 'light' ? '#000000' : '#ffffff'}`,
+            }, animatedStyle]}
+        >
             {userS.logged == true && (
                 <View className={`flex flex-row items-center`}>
 
@@ -74,14 +101,14 @@ export default function Menu(props: Props) {
                         </Pressable>
                     </View>
 
+
                     <Text className={`text-[18px] font-medium ${theme == 'light' ? 'text-my-white' : 'text-my-black'}`}>
                         {userS.name}
                     </Text>
                 </View>
             )}
-            
             <CloseButton />
             <ToggleTheme />
-        </View>
+        </Animated.View>
     )
 }

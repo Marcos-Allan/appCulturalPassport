@@ -28,7 +28,7 @@
  */
 
 //IMPORTA OS HOOKS DO REACT PARA CRIAR UM GERENCIAMENTO DE ESTADOS GLOBAIS
-import { useState, useEffect, createContext, useContext } from 'react'
+import { useState, createContext, useContext } from 'react'
 
 //CRIA E EXPORTA O CONTEUDO DOS ESTADOS
 export const MyContext = createContext({})
@@ -61,28 +61,34 @@ export const MyProvider = ({ children } : { children: React.ReactNode }) => {
 
     //FUNÇÃO RESPONSAVEL POR TROCAR E SALVAR O TEMA ESCOLHIDO PELO USUÁRIO
     const toggleTheme = () => {
+        //SETA O VALOR DA VARIAVEL GLOBAL
         setTheme(theme == 'light' ? 'dark' : 'light')
     }
 
     //FUNÇÃO RESPONSAVEL POR ABRIR E FECHAR O MENU
     const toggleMenuOpen = () => {
+        //SETA O VALOR DA VARIAVEL GLOBAL
         setMenuOpen(!menuOpen)
     }
     
     //FUNÇÃO RESPONSAVEL POR ABRIR E FECHAR O MENU
     const toggleUser = (name:string, img:string, id:string, logged:boolean = true) => {
+        //SETA O VALOR DA VARIAVEL GLOBAL
         setUserS({ logged: logged, name: name, img: img, id: id })
     }
     
     //FUNÇÃO RESPONSAVEL POR TROCAR O ESTADO DE LOADING DA APLICAÇÃO
     const toggleLoading = (state:boolean) => {
+        //SETA O VALOR DA VARIAVEL GLOBAL
         setLoading(state)
     }
 
     //FUNÇÃO RESPONSÁVEL POR DETERMINAR O TIPO E O TEXTO DO ALERTA
     const toggleAlert = (type: string, text: string, isVisible:boolean = true, time: number ) => {
+        //SETA O VALOR DA VARIAVEL GLOBAL
         setMessage({ type: type, text: text, isVisible: isVisible, time: time })
         
+        //FUNÇÃO CHAMADA APÓS O TEMPO PASSADO POR PARÂMETROS
         setTimeout(() => {
             setMessage({ type: type, text: text, isVisible: false, time: time })
         }, time);
