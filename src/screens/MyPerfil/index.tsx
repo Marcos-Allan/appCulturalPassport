@@ -28,10 +28,14 @@
  */
 
 //IMPORTAÇÃO DOS COMPONENTES NATIVOS
-import { View, Pressable, Vibration, Keyboard, Image, TextInput, Text, ScrollView } from "react-native";
+import { View, Pressable, Vibration, Keyboard, Image, TextInput, Text, ScrollView, Button, ActivityIndicator, Alert } from "react-native";
 
 //IMPORTAÇÃO DAS BIBLIOTECAS
 import { useState, useEffect } from "react";
+import * as ImagePicker from 'expo-image-picker';
+
+//IMPORTAÇÃO DOS ICONES
+import { Ionicons } from '@expo/vector-icons';
 
 //IMPORTAÇÃO DO PROVEDOR PARA PEGAR AS VARIÁVEIS GLOBAIS
 import { useMyContext } from "../../provider/geral";
@@ -55,6 +59,9 @@ import InfoStudentCard from "../../Components/InfoStudentCard";
 //IMPORTAÇÃO DA CONFIGURAÇÃO BASE DO AXIOS
 import instance from "../../utils/axios";
 
+//IMPORTAÇÃO DAS BIBLIOTECAS DO FIREBASE
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { storage } from '../../utils/firebase';
 
 //TIPAGEEM DAS ROTAS
 type Props = StackScreenProps<RootStackParamList, 'MyPerfil'>;
@@ -65,9 +72,12 @@ export const MyPerfil:React.FC<Props> = ({ navigation }) => {
     const states:any = useMyContext()
 
     //DESESTRUTURA AS VARIAVEIS ESPECIFICADAS
-    const { theme, menuOpen, toggleMenuOpen, userS, toggleUser, toggleLoading, toggleAlert } = states
+    const { theme, menuOpen, toggleMenuOpen, userS, toggleUser, loading, toggleLoading, toggleAlert } = states
 
     //UTILIZAÇÃO DO HOOK useState
+    const [progress, setProgress] = useState<number>(0)
+    const [imgURL, setImgURL] = useState<string>('')
+    const [isArq, setIsArq] = useState<boolean>(false)
     const [image, setImage] = useState<string>(userS.img)
     const [textInput, setTextInput] = useState<string>(userS.name)
 
@@ -86,41 +96,157 @@ export const MyPerfil:React.FC<Props> = ({ navigation }) => {
     //SISTEMA DE VIBRAÇÃO DE ERRO
     const patternError = [0, 450]
 
+    //PEDE PERMISSÃO PARA USAR A GALERIA
+    useEffect(() => {
+        (async () => {
+            //VÊ SE O USUÁRIO JA LIBEROU O ACESSO A ABRIR A GALERIA DELE
+            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+            //VERIFICA SE O ACESSO FOI LIBERADO OU NÃO
+            if (status !== 'granted') {
+                //ESCREVE NO CONSOLE QUE O USUÁRIO NÃO IRÁ CONSEGUIR ESCOLHER IMAGEM
+                console.log('Desculpe, precisamos de permissão para acessar a galeria para escolher uma imagem!');
+            }
+        })();
+        //EXECUTA A FUNÇÃO ASSIM QUE ELA É LIDA PELO SISTEMA
+    }, []);
+    
+    //FUNÇÃO RESPONSÁVEL POR TROCAR A FOTO DO USUÁRIO AO ELE ESCOLHER A IMAGEM
+    const handleFileIMG = async () => {
+        try {
+            //CONFIGURAÇÃO DA SELEÇÃO DA IMAGEM
+            let result:any = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images, //DEFINE O TIPO DE ARQUIVO QUE PODERÁ SER SELECIONADO
+                allowsEditing: true, //PERMITE EDIÇÃO DE CORTE DENTRO DA IMAGEM
+                aspect: [4, 3], //DEFINE O TAMANHO SELECIONÁVEL DA IMAGEM
+                quality: 1, //PEGA A QUALIDADE DA IMAGEM ORIGINAL
+            });
+            
+            //VERIFICA SE O USUÁRIO CANCELOU A SELEÇÃO DE IMAGENS OU NÃO
+            if (!result.cancelled) {
+                //SETA A URL DA IMAGEM PARA MOSTRAR AO USUÁRIO
+                setImage(result.assets[0].uri);
+
+                //SETA O ESTADO DE ESTAR USANDO UM ARQUIVO DO USUÁRIO COMO AVATAR COMO true
+                setIsArq(true)
+            }else {
+                //ESCREVE NO CONSOLE QUE O USUÁRIO CANCELOU A SELEÇÃO DE IMAGENS
+                console.log('Seleção de imagem cancelada');
+            }
+        } catch (error) {
+            //ESCREVE NO CONSOLE O ERRO OCORRIDO AO TENTAR ABRIR A GALERIA
+            console.log('Erro ao selecionar imagem:', error);
+        }
+    };
+    
+    //FUNÇÃO RESPONSÁVEL POR SALVAR NO BANCO DE DADOS DO FIREBASE A IMAGEM DO USUÁRIO
+    const handleUpload = async () => {
+        if (!image) {
+            return imgURL; // RETORNA A URL DA IMAGEM SE NÃO TIVER UM ARQUIVO SELECIONADO
+        }
+
+        //RETORNA UMA PROMISSE
+        return new Promise((resolve, reject) => {
+            //CRIA UM NOVO XMLHttpRequest(UMA NOVA REQUISIÇÃO XMLHttp)
+            const xhr = new XMLHttpRequest();
+
+            //EXECUTA FUNÇÃO AO CARREGAR A REQUISIÇÃO XMLHttp
+            xhr.onload = async function () {
+                try {
+                    const storageRef = ref(storage, `images/${new Date().getTime()}.jpg`);
+                    const uploadTask = uploadBytesResumable(storageRef, xhr.response);
+
+                    uploadTask.on(
+                    "state_changed",
+                    snapshot => {
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        setProgress(progress);
+                    },
+                    error => {
+                        Alert.alert('Erro no upload', error.message);
+                        reject(error);
+                    },
+                    async () => {
+                        const url = await getDownloadURL(uploadTask.snapshot.ref);
+                        setImgURL(url);
+                        resolve(url);
+                    }
+                    );
+                } catch (error:any) {
+                    //DA UM ALERT NA TELA FALANDO QUE DEU PROBLEMA NO UPLOAD DA IMAGEM
+                    Alert.alert('Erro no upload', error.message);
+
+                    //RECUSA E ENCERRA A PROMISE
+                    reject(error);
+                }
+            };
+
+            xhr.onerror = function (error:any) {
+                //DA UM ALERT NA TELA FALANDO QUE DEU PROBLEMA NO UPLOAD DA IMAGEM
+                Alert.alert('Erro no upload', error.message);
+                
+                //RECUSA E ENCERRA A PROMISE
+                reject(error);
+            };
+
+            //PEGA A IMAGEM
+            xhr.open("GET", image);
+            
+            //MUDA O TIPO DELA PARA blob
+            xhr.responseType = "blob";
+            
+            //ENVIA A IMAGEM
+            xhr.send();
+        });
+    };
+    
     //FUNÇÃO RESPONSÁVEL POR ATUALIZAR OS DADOS DO USUÁRIO
-    function updateUser() {
-        //MUDA O ESTADO DE CARREGAMENTO DA APLICAÇÃO PARA true
-        toggleLoading(true)
-        
-        //FAZ UMA REQUISIÇÃO DO TIPO put PARA ATUALIZAR OS DADOS DO USUÁRIO
-        instance.put(`/users/update/${userS.id}`, {
-            name: textInput,
-            img: image,
-        }).then((response) => {
-            //MUDA O ESTADO DE CARREGAMENTO DA APLICAÇÃO PARA false
-            toggleLoading(false)
-            
-            //MOSTRA OS DADOS DA REQUISIÇÃO
-            console.log(response.data)
+    const updateUser = async () => {
+        //TROCA O ESTADO DE LOADING DA APLICAÇÃO COMO true
+        toggleLoading(true);
 
-            //REGISTRA O NOME E A FOTO E O ID DO DO USUARIO LOGADO PARA MOSTRAR NO FRONT-END
-            toggleUser(response.data.name, response.data.img, response.data._id)
+        try {
+            //PEGA A IMAGEM QUE O USUÁRIO ESTÁ USANDO
+            const imageURL = await handleUpload();
 
-            //COLOCA ALERT NA TELA
-            toggleAlert(`success`, `Alteração feita com sucesso`, true, 5000)
-        }).catch((error) => {
+            //FAZ UMA REQUISIÇÃO DO TIPO PUT PARA ATUALIZAR OS DADOS DO USUÁRIO
+            const response = await instance.put(`/users/update/${userS.id}`, {
+                //PASSA OS PARAMTROS A SEREM ATUALIZADOS
+                name: textInput,
+                img: imageURL,
+            });
+
+            //TROCA O ESTADO DE LOADING DA APLICAÇÃO COMO false
+            toggleLoading(false);
+
+            //ESCREVE NO CONSOLE A RESPOSTA DO SERVIDOR EM RESPOSTA A REQUISIÇÃO
+            console.log(response.data);
+
+            //ATUALIZA OS DADOS DO USUÁRIO NO FRONTEND
+            toggleUser(response.data.name, response.data.img, response.data._id);
+
+            //COLOCA UM ALERTA NA TELA
+            toggleAlert(`success`, `Alteração feita com sucesso`, true, 5000);
+
+            //SETA A IMAGEM DA URL DO ARQUIVO SELEIONADO COMO VAZIO
+            setImgURL('');
+
+            //RESETA O STATE DE PROGRESSO
+            setProgress(0);
+
+            //SETA O ESTADO DE ESTAR USANDO UM ARQUIVO DO USUÁRIO COMO AVATAR COMO true
+            setIsArq(false)
+        } catch (error) {
             //ESCREVE NO CONSOLE O ERRO OCORRIDO
-            console.log(`Requisição feita com falhas ${error}`)
-            
-            //MUDA O ESTADO DE CARREGAMENTO DA APLICAÇÃO PARA false
-            toggleLoading(false)
-            
-            //FAZ O CELULAR VIBRAR DE ACORDO COM O PADRÃO FORNECIDO
-            Vibration.vibrate(patternError)
+            console.log(`Requisição feita com falhas ${error}`);
 
-            //COLOCA ALERT NA TELA
-            toggleAlert(`error`, `Ocorreu um erro interno no servidor`, true, 5000)
-        })
-    }
+            //TROCA O ESTADO DE LOADING DA APLICAÇÃO COMO false
+            toggleLoading(false);
+
+            //COLOCA UM ALERTA NA TELA
+            toggleAlert(`error`, `Ocorreu um erro interno no servidor`, true, 5000);
+        }
+    };
 
     //FUNÇÃO CHAMADA TODA VEZ QUE CARREGA A PÁGINA
     useEffect(() => {
@@ -171,6 +297,22 @@ export const MyPerfil:React.FC<Props> = ({ navigation }) => {
                             value={textInput}
                         />
                     </View>
+
+                    <Pressable className={`w-[90%] flex flex-row justify-between items-center`} onPress={handleFileIMG}>
+                        <View className={`flex items-center justify-center border-[1px] rounded-[30px] p-[6px]
+                        ${isArq == true ? 'border-[#00ff00]' : `${theme == 'light' ? 'border-my-gray-' : 'border-my-gray-black'}`}
+                        `}>
+                            <Ionicons
+                                name='image'
+                                size={40}
+                                color={`${isArq == true ? '#00ff00' : `${theme == 'light' ? '#818181' : '#C0C0C0'}`}`}
+                            />
+                        </View>
+
+                        <Text className={`${isArq == true ? 'text-[#00ff00]' : `${theme == 'light' ? 'text-my-gray' : 'text-my-gray-black'}`}`}>Nenhuma imagem selecionada</Text>
+
+                        <Text className={`${progress == 100 ? 'text-[#00ff00]' : `${theme == 'light' ? 'text-my-gray' : 'text-my-gray-black'}`}`}>{String(progress)}%</Text>
+                    </Pressable>
                     
                     <Text className={`text-[24px] capitalize my-2 ${theme == 'light' ? 'text-my-black' : 'text-my-white'}`}>avatares</Text>
 
