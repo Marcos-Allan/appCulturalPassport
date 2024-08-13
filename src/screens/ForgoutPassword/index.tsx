@@ -129,23 +129,19 @@ export const ForgoutPassword:React.FC<Props> = ({ navigation }) => {
 
             //ESCREVE NO CONSOLE DO SITE 
             console.log(response.data)
-
-            //VERIFICA SE A CONTA EXISTE NO BANCO DE DADOS
-            if(response.data == "Usuário não encontrado"){
-                //COLOCA ALERT NA TELA
-                toggleAlert(`error`, `Usuário não cadastrado`, true, 5000)
-
-                //FAZ O CELULAR VIBRAR DE ACORDO COM O PADRÃO FORNECIDO
-                Vibration.vibrate(patternError)
-            }else if(response.data.message == "Código enviado para o email informado"){
+            
+            if(response.data.message == "Código enviado para o email informado"){
                 //COLOCA ALERT NA TELA
                 toggleAlert(`success`, `Email enviado`, true, 5000)
 
                 //RESGATA O ID DO USUÁRIO
-                toggleUser('', '', response.data.user._id, false)
+                toggleUser('', '', response.data.user._id, [], 0, [], false)
 
                 //REDIRECIONA O USUÁRIO PARA A PRÓXIMA PÁGINA
                 navigation.navigate('ConfirmCode')
+            }else{
+                //COLOCA ALERT NA TELA
+                toggleAlert(`error`, response.data, true, 5000)
             }
 
         })

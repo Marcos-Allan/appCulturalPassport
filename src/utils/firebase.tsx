@@ -29,7 +29,7 @@
 
 //IMPORTAÇÃO DA INICIALIZAÇÃO DA APLICAÇÃO E DOS SERVIÇOS DO FIREBASE
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, getRedirectResult, signInWithRedirect } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, getRedirectResult, signInWithRedirect, signInWithPopup} from "firebase/auth";
 import { getStorage } from "firebase/storage"
 
 //CONFIGURAÇÃO DA CONTA DO FIREBASE PARA CONSEGUIR USAR OS SERVIÇOS
@@ -51,8 +51,8 @@ const auth = getAuth(app);
 //INICIA O PROVEDOR DO GOOGLE
 const provider = new GoogleAuthProvider();
 
-//
+//INICIA O LOCAL DE SALVAMENTO
 const storage = getStorage(app)
 
 //EXPORTA AS FUNÇÕES CRIADAS ACIMA
-export { signInWithRedirect, auth, provider, getRedirectResult, GoogleAuthProvider, storage }
+export { signInWithRedirect, auth, provider, getRedirectResult, GoogleAuthProvider, storage, signInWithPopup }

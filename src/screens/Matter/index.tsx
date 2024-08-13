@@ -42,6 +42,9 @@ import { StackScreenProps } from '@react-navigation/stack';
 //LISTA DOS PARAMETROS DA PÁGINA
 import { RootStackParamList } from '../../../App';
 
+//CONFIGURAÇÃO DA BASE URL DO AXIOS
+import instance from '../../utils/axios';
+
 //IMPORTAÇÃO DOS COMPONENTES
 import Menu from "../../Components/Menu";
 import TitlePage from "../../Components/TitlePage";
@@ -56,7 +59,7 @@ type Props = StackScreenProps<RootStackParamList, 'Matter'>;
 export const Matter:React.FC<Props> = ({ navigation, route }) => {
 
     //PEGA OS PARAMETROS PASSADOS PARA A PÁGINA
-    const { matterName, examName } = route.params
+    const { matterName } = route.params
 
     //RESGATA AS VARIAVEIS GLOBAIS
     const states:any = useMyContext()
@@ -66,6 +69,7 @@ export const Matter:React.FC<Props> = ({ navigation, route }) => {
 
     //UTILIZAÇÃO DO HOOK useState
     const [content, setContent] = useState<any[]>([])
+    const [loadingContent, setLoadingContent] = useState<boolean>(false)
 
     //FUNÇÃO RESPONSÁVEL POR FECHAR O MENU SE ESTIVER ABERTO
     function closeMenu(){
@@ -94,117 +98,46 @@ export const Matter:React.FC<Props> = ({ navigation, route }) => {
         console.log('uiii')
     }
 
-    //FUNÇÃO RESPONSÁVEL POR GERAR O CONTEÚDO DEPENDENDO DO PARÂMETRO PASSADO
-    function getContent(matter:string) {
-        switch (matter) {
-            case 'fisíca':
-                //FISICA
-                    setContent([
-                        { title: 'eletrodinamica', background: 0 },
-                        { title: 'leis de newton', background: 1 },
-                        { title: 'ondulatória', background: 2 },
-                        { title: 'campo magnético', background: 3 },
-                        { title: 'cinemática', background: 4 },
-                        { title: 'óptica', background: 5 },
-                        { title: 'mecânica', background: 6 },
-                        { title: 'circuitos elétricos', background: 7 }
-                    ])
-                    break;
-                case 'história':
-                    //HISTÓRIA
-                    setContent([
-                        { title: 'brasil colônia', background: 0 },
-                        { title: 'idade moderna', background: 1 },
-                        { title: 'idade média', background: 2 },
-                        { title: 'tempo presente', background: 3 },
-                        { title: 'estado novo e populismo', background: 4 }
-                    ])
-                    break;
-                case 'inglês':
-                    //INGLÊS
-                    setContent([
-                        { title: 'tempos verbais em inglês', background: 0 },
-                        { title: 'voz passiva em ingles', background: 1 },
-                        { title: 'pronomes pessoais', background: 2 },
-                        { title: 'Linking words', background: 3 }
-                    ])
-                    break;
-                case 'geografia':
-                    //GEOGRAFIA
-                    setContent([
-                        { title: 'cartografia e leitura de mapas', background: 0 },
-                        { title: 'climas do brasil e climas do mundo', background: 1 },
-                        { title: 'acordo de paris e conferências ambientais', background: 2 },
-                        { title: 'aquecimento global e efeito estufa', background: 3 },
-                        { title: 'estruturas geológicas e tipos de relevo', background: 4 },
-                        { title: 'biomas do brasil e biomas do mundo', background: 5 },
-                        { title: 'matriz de transporte', background: 6 },
-                        { title: 'bacias hidrográficas e escassez', background: 7 },
-                    ])
-                    break;
-                case 'artes':
-                    //ARTES
-                    setContent([
-                        { title: 'arte contemporânea', background: 0 },
-                        { title: 'convenções teatrais', background: 1 },
-                        { title: 'folcloreve folguedos populares', background: 2 },
-                        { title: 'tradições de povos indigenas', background: 3 },
-                        { title: 'arte de origem africana no brasil', background: 4 }
-                    ])
-                    break;
-                case 'português':
-                    //PORTUGUÊS
-                    setContent([
-                        { title: 'variação linguistica', background: 0 },
-                        { title: 'genêros textuais', background: 1 },
-                        { title: 'intertextualidade', background: 2 },
-                        { title: 'figuras de linguagem', background: 3 }
-                    ])
-                    break;
-                case 'química':
-                    //QUÍMICA
-                    setContent([
-                        { title: 'estudo de moléculas', background: 0 },
-                        { title: 'química orgânica', background: 1 },
-                        { title: 'reações inorgânicas', background: 2 },
-                        { title: 'soluções - concentrações', background: 3 },
-                        { title: 'cálculos - estequiométricos', background: 4 },
-                        { title: 'eletroquímica', background: 5 },
-                        { title: 'termoquímica', background: 6 },
-                        { title: 'poluição ambiental', background: 7 },
-                    ])
-                    break;
-                case 'biologia':
-                    //BIOLOGIA
-                    setContent([
-                        { title: 'ecologia', background: 0 },
-                        { title: 'fisiologia humana', background: 1 },
-                        { title: 'biotecnologia', background: 2 },
-                        { title: 'biologia celular', background: 3 },
-                        { title: 'botânica', background: 4 },
-                    ])
-                    break;
-                case 'matemática':
-                    //MAEMÁTICA
-                    setContent([
-                        { title: 'analise combinatória', background: 0 },
-                        { title: 'porcentagem', background: 1 },
-                        { title: 'geometria plana e geometria espacial', background: 2 },
-                        { title: 'razão e proporção', background: 3 },
-                        { title: 'equações e funções', background: 4 },
-                        { title: 'estatística e probabilidade', background: 5 }
-                    ])
-                break;
-        
-            default:
-                break;
-        }
+    //FUNÇÃO RESPONSÁVEL POR DEIXAR O TEXTO EM CAPITALIZE
+    function capitalizeText(text:string) {
+        if (text.length === 0) return text; // Retorna a string original se estiver vazia
+        return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+    }
+
+    //FUNÇÃO RESPONSÁVEL POR LISTAR OS CONTEUDOS DISPONIVEIS
+    function getContent(){
+        //MUDA O ESTADO DE CARREGAMENTO DOS CONTEUDOS PARA true
+        setLoadingContent(true)
+
+        instance.get(`/matter/${matterName}`)
+        .then(function (response) {
+            console.log(response.data)
+
+            //MUDA O ESTADO DE CARREGAMENTO DAS MATÉRIAS PARA false
+            setLoadingContent(false)
+            
+            //LIMPA O ARRAY DE CONTEUDO DAS MATÉRIAS
+            setContent([])
+
+            //COLOCA AS MATÉRIAS CADASTRADAS NO BD NO ARRAY DE MATÉRIAS
+            response.data.contents.map((content:any, i:number) => {
+                setContent((cont:any) => [...cont, {
+                    title: content.text,
+                    background: i
+                }])
+            })
+        })
+        .catch(function (error) {
+            console.log(error)
+            //MUDA O ESTADO DE CARREGAMENTO DAS MATÉRIAS PARA false
+            setLoadingContent(false)
+        })
     }
 
     //FUNÇÃO CHAMADA TODA VEZ QUE CARREGA A PÁGINA
     useEffect(() => {
         //DEFINE O ARRAY COM OS CONTEUDOS
-        getContent(matterName.toLowerCase())
+        getContent()
     },[])
 
     return(
@@ -219,11 +152,11 @@ export const Matter:React.FC<Props> = ({ navigation, route }) => {
                     <MenuButton />
                 </View>
 
-                <Text className={` mb-[20px] text-center text-[16px] ${theme == 'light' ? 'text-my-black' : 'text-my-white'}`}>Conteudos que mais caem no {examName.toUpperCase()}</Text>
+                <Text className={` mb-[20px] text-center text-[16px] ${theme == 'light' ? 'text-my-black' : 'text-my-white'}`}>Conteudos de {matterName} que mais caem no ENEM</Text>
 
                 <ScrollView
                     contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-start', alignItems: 'center' }}
-                    style={{ minWidth: '100%', maxHeight: '77.7%' }}
+                    style={{ minWidth: '100%', maxHeight: '75%' }}
                 >
                     <View className={`w-[100%] flex flex-col items-center justify-start`}>
                         {content.map((cont, i) => (
@@ -234,19 +167,21 @@ export const Matter:React.FC<Props> = ({ navigation, route }) => {
                             />
                         ))}
 
-                        {matterName == 'fisíca' && (
-                            <Pressable 
-                                onPress={() => navigation.navigate('Test', { matterName: matterName })}
-                                className={`
-                                    ml-auto w-auto border-[1px] p-3 rounded-[20px] bg-transparent mb-2
-                                    ${theme == 'light' ? 'text-my-black border-my-black' : 'text-my-white border-my-white'}
-                                `}
-                            >
-                                    <Text
-                                        className={`${theme == 'light' ? 'text-my-black border-my-black' : 'text-my-white border-my-white'}
-                                    `}>Fazer Prova</Text>
-                            </Pressable>
+                        {loadingContent == true && (
+                            <Text className={`w-full text-center text-[18px] ${theme == 'light' ? 'text-my-black' : 'text-my-white'}`}>estamos carregando as matérias seja paciente</Text>
                         )}
+                        
+                        <Pressable 
+                            onPress={() => navigation.navigate('Test', { matterName: matterName })}
+                            className={`
+                                ml-auto w-auto border-[1px] p-3 rounded-[20px] bg-transparent mb-2
+                                ${theme == 'light' ? 'text-my-black border-my-black' : 'text-my-white border-my-white'}
+                            `}
+                        >
+                                <Text
+                                    className={`${theme == 'light' ? 'text-my-black border-my-black' : 'text-my-white border-my-white'}
+                                `}>Fazer Prova</Text>
+                        </Pressable>
                     </View>
                 </ScrollView>
             </View>

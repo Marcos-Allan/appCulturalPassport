@@ -54,12 +54,12 @@ export default function ContentCard(props: Props) {
     //FUNÇÃO CHAMADA AO CARREGAR A PAGINA
     useEffect(() => {
         //VERIFICA QUAL A COR ESCOLHIDA PARA O BACKGROUND
-        if(props.background == 0 || props.background == 3 || props.background == 6){
-            setColor('#010E26')
-        }else if(props.background == 1 || props.background == 4 || props.background == 7){
-            setColor('#445EF2')
+        if(props.background == 0 || props.background == 3 || props.background == 6 || props.background == 9){
+            setColor('#191D1F')
+        }else if(props.background == 1 || props.background == 4 || props.background == 7 || props.background == 10){
+            setColor('#B47C49')
         }else{
-            setColor('#263973')
+            setColor('#723F28')
         }
     },[])
 

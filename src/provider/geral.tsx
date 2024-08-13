@@ -38,65 +38,68 @@ interface User {
     logged: boolean,
     name: string,
     img: string,
-    id: String
+    id: String,
+    simulations: any,
+    simulationsConcludeds: number,
+    cronogram: any,
 }
 
 //TIPAGEM DO ALERT
 interface Alert {
     type: string,
     text: string,
-    isVisible: boolean,
-    time: number,
 }
 
 //CRIA E EXPORTA O PROVEDOR DOS ESTADOS
 export const MyProvider = ({ children } : { children: React.ReactNode }) => {
-
+    
     //CRIA ESTADO GLOBAL DE CADA VARIAVEL
     const [theme, setTheme] = useState<string>('light')
     const [menuOpen, setMenuOpen] = useState<boolean>(false)
-    const [userS, setUserS] = useState<User>({ logged: false, name: '', img: '', id: '' })
+    const [userS, setUserS] = useState<User>({ logged: false, name: '', img: '', id: '', simulations: [], simulationsConcludeds: 0, cronogram: [] })
     const [loading, setLoading] = useState<boolean>(false)
-    const [message, setMessage] = useState<Alert>({ type: 'undefined', text: 'Alerta simples', isVisible: false, time: 0 })
+    const [message, setMessage] = useState<Alert>({ type: 'undefined', text: 'Alerta simples' })
+    const [isLogout, setIsLogout] = useState<boolean>(false)
+    const [isDelAccount, setIsDelAccount] = useState<boolean>(false)
 
-    //FUNÇÃO RESPONSAVEL POR TROCAR E SALVAR O TEMA ESCOLHIDO PELO USUÁRIO
+    //FUNÇÃO RESPONSAVEL POR TROCAR E SALVAR NO localStorage O TEMA ESCOLHIDO PELO USUÁRIO
     const toggleTheme = () => {
-        //SETA O VALOR DA VARIAVEL GLOBAL
         setTheme(theme == 'light' ? 'dark' : 'light')
     }
 
     //FUNÇÃO RESPONSAVEL POR ABRIR E FECHAR O MENU
     const toggleMenuOpen = () => {
-        //SETA O VALOR DA VARIAVEL GLOBAL
         setMenuOpen(!menuOpen)
     }
     
     //FUNÇÃO RESPONSAVEL POR ABRIR E FECHAR O MENU
-    const toggleUser = (name:string, img:string, id:string, logged:boolean = true) => {
-        //SETA O VALOR DA VARIAVEL GLOBAL
-        setUserS({ logged: logged, name: name, img: img, id: id })
+    const toggleUser = (name:string, img:string, id:string, simulations:any, simulationsConcludeds:number = 0, cronogram:any, logged:boolean = true) => {
+        setUserS({ logged: logged, name: name, img: img, id: id, simulations: simulations, simulationsConcludeds: simulationsConcludeds, cronogram: cronogram })
     }
     
     //FUNÇÃO RESPONSAVEL POR TROCAR O ESTADO DE LOADING DA APLICAÇÃO
     const toggleLoading = (state:boolean) => {
-        //SETA O VALOR DA VARIAVEL GLOBAL
         setLoading(state)
     }
-
+    
     //FUNÇÃO RESPONSÁVEL POR DETERMINAR O TIPO E O TEXTO DO ALERTA
-    const toggleAlert = (type: string, text: string, isVisible:boolean = true, time: number ) => {
-        //SETA O VALOR DA VARIAVEL GLOBAL
-        setMessage({ type: type, text: text, isVisible: isVisible, time: time })
-        
-        //FUNÇÃO CHAMADA APÓS O TEMPO PASSADO POR PARÂMETROS
-        setTimeout(() => {
-            setMessage({ type: type, text: text, isVisible: false, time: time })
-        }, time);
+    const toggleAlert = (type: string, text: string ) => {
+        setMessage({ type: type, text: text })
     }
 
+    //FUNÇÃO RESPONSÁVEL POR DAR LOGOUT NA CONTA DO USUÁRIO
+    const toggleLogout  = (state:boolean) => {
+        setIsLogout(state)
+    }
+    
+    //FUNÇÃO RESPONSÁVEL POR DELETAR NA CONTA DO USUÁRIO
+    const toggleDeleteAccount  = (state:boolean) => {
+        setIsDelAccount(state)
+    }
+    
     //RETORNA TUDO PARA SER USADO EM TODO O SITE
     return (
-        <MyContext.Provider value={{ theme, toggleTheme, menuOpen, toggleMenuOpen, userS, toggleUser, loading, toggleLoading, message, toggleAlert }}>
+        <MyContext.Provider value={{ theme, toggleTheme, menuOpen, toggleMenuOpen, userS, toggleUser, loading, toggleLoading, message, toggleAlert, isLogout, toggleLogout, isDelAccount, toggleDeleteAccount }}>
             {children}
         </MyContext.Provider>
     )

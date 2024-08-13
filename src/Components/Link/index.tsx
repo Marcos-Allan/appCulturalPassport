@@ -49,7 +49,7 @@ export default function Link(props: Props) {
 
     return(
         <Pressable onPress={() => props.event && props.event()}>
-            <Text className={`underline text-[18px] my-2 ${theme == 'light' ? 'text-my-primary' : 'text-my-secondary'}`}>{props.text}</Text>
+            <Text className={`underline text-[18px] my-2 ${theme == 'light' ? 'text-my-terciary' : 'text-my-quintenary'}`}>{props.text}</Text>
         </Pressable>
     )
 }

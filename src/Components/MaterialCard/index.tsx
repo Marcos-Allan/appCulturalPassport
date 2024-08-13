@@ -45,20 +45,22 @@ export default function MaterialCard(props: Props) {
     
     //USO DO HOOK useState
     const [colors, setColors] = useState<String[]>([
-        '#52bd9b',
-        '#c47e3d',
-        '#e41c1c',
-        '#eeee1b',
-        '#e843f1',
-        '#987dd0',
-        '#c66193',
-        '#38da56',
+        '#52bd9b', //0
+        '#c47e3d', //1
+        '#e41c1c', //2
+        '#f7c957', //3
+        '#e843f1', //4
+        '#987dd0', //5
+        '#c66193', //6
+        '#38da56', //7
+        '#527fef', //8
+        '#281b6e', //9
     ])
 
     //FUNÇÃO CHAMADA AO RECARREGAR A PÁGINA
     useEffect(() => {
         //COLOCA UMA NOVA COR NO ARRAY DE CORES
-        setColors((colors) => [...colors, '#527fef'])
+        setColors((colors) => [...colors, '#40a6b0'])
     },[])
 
     //CRIA UMA REFERÊNCIA PARA O ESTADO DA ANIMAÇÃO
@@ -101,7 +103,7 @@ export default function MaterialCard(props: Props) {
                     position: 'relative',
                     marginBottom: 0,
                     width: '100%',
-                    height: 100,
+                    height: 'auto',
                     borderRadius: 8,
                     padding: 12,
                     backgroundColor: `${colors[Number(props.background)]}`
@@ -110,7 +112,7 @@ export default function MaterialCard(props: Props) {
                 <Text className={`text-[22px] text-my-white font-semibold capitalize`}>{props.titleMateria}</Text>
 
                 <View
-                    className={`rounded-[25px] w-[50px] h-[50px] absolute bottom-[-12%] right-[5%] border-[3px] bg-my-white
+                    className={`rounded-[25px] w-[50px] h-[50px] absolute bottom-[-20%] right-[5%] border-[3px] bg-my-white
                     `}
                     style={{ borderColor: `${colors[Number(props.background)]}` }}
                 >

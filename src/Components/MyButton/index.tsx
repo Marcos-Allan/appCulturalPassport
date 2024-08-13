@@ -106,8 +106,8 @@ export default function MyButton(props: Props) {
                 }, animatedStyle]}
 
                 className={`
-                    ${theme == 'light' ? 'bg-my-primary' : 'bg-my-secondary'}
-                    ${props.disabled == true && `${theme == 'light' ? 'bg-my-primary' : 'bg-my-secondary'}`}
+                    ${theme == 'light' ? 'bg-my-terciary' : 'bg-my-quintenary'}
+                    ${props.disabled == true && `${theme == 'light' ? 'bg-my-terciary' : 'bg-my-quintenary'}`}
                     ${props.disabled == false && `${theme == 'light' ? 'bg-my-gray' : 'bg-my-gray-black'}`}
                 `}
             >

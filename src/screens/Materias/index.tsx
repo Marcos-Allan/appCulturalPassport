@@ -28,7 +28,7 @@
  */
 
 //IMPORTAÇÃO DOS COMPONENTES NATIVOS
-import { View, Pressable, ScrollView } from "react-native";
+import { View, Pressable, ScrollView, Text } from "react-native";
 
 //IMPORTAÇÃO DAS BIBLIOTECAS
 import { useState, useEffect } from "react";
@@ -50,6 +50,9 @@ import Return from "../../Components/Return";
 import BottomNavigation from "../../Components/BottomNavigation";
 import MaterialCard from "../../Components/MaterialCard";
 
+//CONFIGURAÇÃO DA BASE URL DO AXIOS
+import instance from '../../utils/axios';
+
 //TIPAGEEM DAS ROTAS
 type Props = StackScreenProps<RootStackParamList, 'Materias'>;
 
@@ -63,6 +66,7 @@ export const Materias:React.FC<Props> = ({ navigation }) => {
 
     //UTILIZAÇÃO DO HOOK useState
     const [matters, setMatters] = useState<any[]>([])
+    const [loadingMatter, setLoadingMatter] = useState<boolean>(false)
 
     //FUNÇÃO RESPONSÁVEL POR FECHAR O MENU SE ESTIVER ABERTO
     function closeMenu(){
@@ -76,23 +80,40 @@ export const Materias:React.FC<Props> = ({ navigation }) => {
     //FUNÇÃO CHAMADA TODA VEZ QUE CARREGA A PÁGINA
     useEffect(() => {
         closeMenu()
-
     },[])
+
+    //FUNÇÃO RESPONÁVEL POR PEGAR AS MATÉRIAS
+    function getMatters() {
+        //MUDA O ESTADO DE CARREGAMENTO DAS MATÉRIAS PARA true
+        setLoadingMatter(true)
+
+        instance.get('/matter/matters')
+        .then(function (response) {
+            //MUDA O ESTADO DE CARREGAMENTO DAS MATÉRIAS PARA false
+            setLoadingMatter(false)
+            
+            //LIMPA O ARRAY DE MATÉRIAS
+            setMatters([])
+
+            //COLOCA AS MATÉRIAS CADASTRADAS NO BD NO ARRAY DE MATÉRIAS
+            response.data.map((mat:any, i:number) => {
+                setMatters((mats:any) => [...mats, {
+                    titleMateria: mat.matter,
+                    background: i
+                }])
+            })
+        })
+        .catch(function (error) {
+            console.log(error)
+            //MUDA O ESTADO DE CARREGAMENTO DAS MATÉRIAS PARA false
+            setLoadingMatter(false)
+        })
+    }
 
     //FUNÇÃO CHAMADA TODA VEZ QUE CARREGA A PÁGINA
     useEffect(() => {
-        //DEFINE O ARRAY COM AS MATÉRIAS
-        setMatters([
-            { titleMateria: 'fisíca',  background: 0 },
-            { titleMateria: 'história',  background: 1 },
-            { titleMateria: 'inglês',  background: 2 },
-            { titleMateria: 'geografia',  background: 3 },
-            { titleMateria: 'artes',  background: 4 },
-            { titleMateria: 'português',  background: 5 },
-            { titleMateria: 'química',  background: 6 },
-            { titleMateria: 'biologia',  background: 7 },
-            { titleMateria: 'matemática',  background: 8 },
-        ])
+        //CHAMA A FUNÇÃO QUE LISTA AS MATÉRIAS
+        getMatters()
     },[])
 
     return(
@@ -116,11 +137,15 @@ export const Materias:React.FC<Props> = ({ navigation }) => {
                             <MaterialCard
                                 titleMateria={mat.titleMateria}
                                 background={mat.background}
-                                event={() => navigation.navigate('Exams', { matterName: mat.titleMateria })}
+                                event={() => navigation.navigate('Matter', { matterName: mat.titleMateria })}
                                 key={i}
                             />
                         ))}
                     </View>
+
+                    {loadingMatter == true && (
+                        <Text className={`w-full text-center text-[18px] ${theme == 'light' ? 'text-my-black' : 'text-my-white'}`}>estamos carregando as matérias seja paciente</Text>
+                    )}
                 </ScrollView>
             </View>
             <BottomNavigation

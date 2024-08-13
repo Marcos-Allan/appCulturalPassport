@@ -122,8 +122,16 @@ export const SignIn:React.FC<Props> = ({ navigation }) => {
                 setTextEmail('')
                 setTextPassword('')
 
-                //COLOCA OS DADOS DO USUÁRIO NO FRONTEND
-                toggleUser(response.data.name, response.data.img, response.data._id, true)
+                //FORMATA E SEPARA A STRING PARA VER MATÉRIA POR MATÉRIA DO CRONOGRAMA
+                const cronogram = response.data.cronogram == "" ? '' : response.data.cronogram.split('[')[1].split(']')[0].split(',')
+
+                //ESCREVE NO CONSOLE
+                console.log(cronogram)
+
+                //REGISTRA O NOME E A FOTO E O ID DO DO USUARIO LOGADO PARA MOSTRAR NO FRONT-END
+                toggleUser(response.data.name, response.data.img, response.data._id, response.data.simulations, response.data.simulationsConcludeds, cronogram)
+
+                console.log(response.data)
 
                 //MOSTRA MENSAGEM DE SUCESSO
                 toggleAlert('success', `Seja bem vindo(a), ${response.data.name}`, true, 5000)

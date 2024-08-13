@@ -18,7 +18,6 @@ import { Materias } from './src/screens/Materias';
 import { Exercises } from './src/screens/Exercises';
 import { Achievements } from './src/screens/Achievements';
 import { Notifications } from './src/screens/Notifications';
-import { Exams } from './src/screens/Exams';
 import { Matter } from './src/screens/Matter';
 
 //IMPORTAÇÃO DO PROVEDOR DE ESTADOS GLOBAIS
@@ -43,8 +42,7 @@ export type RootStackParamList = {
   Exercises: undefined;
   Achievements: undefined;
   Notifications: undefined;
-  Exams: { matterName: string };
-  Matter: { matterName: string, examName: string };
+  Matter: { matterName: string};
   Test: { matterName: string };
 };
 
@@ -70,7 +68,6 @@ export default function App() {
             <Stack.Screen name="Exercises" component={Exercises} />
             <Stack.Screen name="Achievements" component={Achievements} />
             <Stack.Screen name="Notifications" component={Notifications} />
-            <Stack.Screen name="Exams" component={Exams} />
             <Stack.Screen name="Matter" component={Matter} />
             <Stack.Screen name="Test" component={Test} />
           </Stack.Navigator>
