@@ -28,10 +28,10 @@
  */
 
 //IMPORTAÇÃO DOS COMPONENTES NATIVOS
-import { View, Pressable, ScrollView } from "react-native";
+import { View, Pressable, ScrollView, Text } from "react-native"
 
 //IMPORTAÇÃO DAS BIBLIOTECAS
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 //IMPORTAÇÃO DO PROVEDOR PARA PEGAR AS VARIÁVEIS GLOBAIS
 import { useMyContext } from "../../provider/geral";
@@ -41,6 +41,9 @@ import { StackScreenProps } from '@react-navigation/stack';
 
 //LISTA DOS PARAMETROS DA PÁGINA
 import { RootStackParamList } from '../../../App';
+
+//CONFIGURAÇÃO DA BASE URL DO AXIOS
+import instance from '../../utils/axios';
 
 //IMPORTAÇÃO DOS COMPONENTES
 import Menu from "../../Components/Menu";
@@ -72,27 +75,53 @@ export const Achievements:React.FC<Props> = ({ navigation }) => {
             return
         }
     }
+    
+    //UTILIZAÇÃO DO HOOK useState
+    const [loadingAchivements, setLoadingAchivements] = useState<boolean>(false)
 
     //FUNÇÃO CHAMADA TODA VEZ QUE CARREGA A PÁGINA
     useEffect(() => {
         closeMenu()
-
     },[])
+
+    //FUNÇÃO RESPONSÁVEL POR PEGAR AS CONQUISTAS DO BD
+    function getAchievements() {
+
+        //MUDA O ESTADO DE LOADING DAS CONQUISTAS PARA true
+        setLoadingAchivements(true)
+        
+        instance.get('/achievement/achievements')
+        .then(function (response) {
+            //COLOCA AS CONQUISTAS NO ARRAY DE CONQUISTAS
+            setConquests(response.data)
+            
+            //MUDA O ESTADO DE LOADING DAS CONQUISTAS PARA false
+            setLoadingAchivements(false)
+        })
+        .catch(function (error) {
+            //ESCREVE NO CONSOLE O ERRO OCORRIDO
+            console.log(error)
+            
+            //MUDA O ESTADO DE LOADING DAS CONQUISTAS PARA false
+            setLoadingAchivements(false)
+        })
+    }
 
     //FUNÇÃO CHAMADA TODA VEZ QUE CARREGA A PÁGINA
     useEffect(() => {
         //DEFINE O ARRAY COM AS CONQUISTAS
-        setConquests([
-            { level: 2, message: 'próxima meta 365 dias', porcentage: 80, title: 'Day o cool' },
-            { level: 3, message: 'próxima meta 10x ao dia', porcentage: 100, title: 'First fap' },
-            { level: 2, message: 'sobreviver mais um dia', porcentage: 30, title: 'Survival day' },
-            { level: 2, message: 'sobreviver mais um dia', porcentage: 30, title: 'Survival day' },
-            { level: 2, message: 'sobreviver mais um dia', porcentage: 30, title: 'Survival day' },
-            { level: 2, message: 'sobreviver mais um dia', porcentage: 30, title: 'Survival day' },
-            { level: 2, message: 'sobreviver mais um dia', porcentage: 30, title: 'Survival day' },
-            { level: 2, message: 'sobreviver mais um dia', porcentage: 30, title: 'Survival day' },
-            { level: 2, message: 'sobreviver mais um dia', porcentage: 30, title: 'Winner !!' },
-        ])
+        getAchievements()
+        // setConquests([
+        //     { level: 2, message: 'próxima meta 365 dias', porcentage: 80, title: 'Day o cool' },
+        //     { level: 3, message: 'próxima meta 10x ao dia', porcentage: 100, title: 'First fap' },
+        //     { level: 2, message: 'sobreviver mais um dia', porcentage: 30, title: 'Survival day' },
+        //     { level: 2, message: 'sobreviver mais um dia', porcentage: 30, title: 'Survival day' },
+        //     { level: 2, message: 'sobreviver mais um dia', porcentage: 30, title: 'Survival day' },
+        //     { level: 2, message: 'sobreviver mais um dia', porcentage: 30, title: 'Survival day' },
+        //     { level: 2, message: 'sobreviver mais um dia', porcentage: 30, title: 'Survival day' },
+        //     { level: 2, message: 'sobreviver mais um dia', porcentage: 30, title: 'Survival day' },
+        //     { level: 2, message: 'sobreviver mais um dia', porcentage: 30, title: 'Winner !!' },
+        // ])
     },[])
 
     return(
@@ -103,7 +132,7 @@ export const Achievements:React.FC<Props> = ({ navigation }) => {
                 
                 <View className={`w-[90%] mt-8 justify-center flex flex-row items-center mb-5`}>
                     <Return event={() => navigation.goBack()} />
-                    <TitlePage text="matérias" />
+                    <TitlePage text="conquistas" />
                     <MenuButton />
                 </View>
 
@@ -112,10 +141,14 @@ export const Achievements:React.FC<Props> = ({ navigation }) => {
                     style={{ minWidth: '100%', maxHeight: '83.42%' }}
                 >
                     <View className={`w-[100%] flex flex-col items-center justify-start`}>
-                    {conquests.map((conq, i) => (
-                        <ConquestCard level={conq.level} message={conq.message} porcentage={conq.porcentage} title={conq.title} key={i} />
-                    ))}
+                        {loadingAchivements == false && conquests.length >= 1 && conquests.map((conq:any, i:number) => (
+                            <ConquestCard level={conq.level} message={conq.message} porcentage={conq.porcentage} title={conq.title} key={i} uri={conq.imgURL} />
+                        ))}
                     </View>
+
+                    {loadingAchivements == true && (
+                        <Text className={`w-full text-center text-[18px] ${theme == 'light' ? 'text-my-black' : 'text-my-white'}`}>estamos carregando as conquistas seja paciente</Text>
+                    )}
                 </ScrollView>
             </View>
             <BottomNavigation

@@ -28,7 +28,7 @@
  */
 
 //IMPORTA OS HOOKS DO REACT PARA CRIAR UM GERENCIAMENTO DE ESTADOS GLOBAIS
-import { useState, createContext, useContext } from 'react'
+import { useState, createContext, useContext, ReactNode } from 'react'
 
 //CRIA E EXPORTA O CONTEUDO DOS ESTADOS
 export const MyContext = createContext({})
@@ -51,7 +51,7 @@ interface Alert {
 }
 
 //CRIA E EXPORTA O PROVEDOR DOS ESTADOS
-export const MyProvider = ({ children } : { children: React.ReactNode }) => {
+export const MyProvider = ({ children } : { children: ReactNode }) => {
     
     //CRIA ESTADO GLOBAL DE CADA VARIAVEL
     const [theme, setTheme] = useState<string>('light')
@@ -83,8 +83,13 @@ export const MyProvider = ({ children } : { children: React.ReactNode }) => {
     }
     
     //FUNÇÃO RESPONSÁVEL POR DETERMINAR O TIPO E O TEXTO DO ALERTA
-    const toggleAlert = (type: string, text: string ) => {
-        setMessage({ type: type, text: text })
+    const toggleAlert = (type: string, text: string, isVisible:boolean = false, time:number ) => {
+        setMessage({ type: type, text: text, isVisible: isVisible, time: time })
+
+        //FUNÇÃO CHAMADA APÓS O TEMPO PASSADO POR PARÂMETROS
+        setTimeout(() => {
+            setMessage({ type: type, text: text, isVisible: false, time: 0 })
+        }, time);
     }
 
     //FUNÇÃO RESPONSÁVEL POR DAR LOGOUT NA CONTA DO USUÁRIO

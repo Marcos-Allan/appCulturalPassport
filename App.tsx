@@ -1,3 +1,5 @@
+import * as React from 'react'
+
 //IMPORTAÇÃO DOS COMPONENTES NATIVOS
 import { SafeAreaView, StatusBar } from 'react-native'
 
@@ -71,8 +73,8 @@ export default function App() {
             <Stack.Screen name="Matter" component={Matter} />
             <Stack.Screen name="Test" component={Test} />
           </Stack.Navigator>
-          <LoadingPage />
           <Alert />
+          <LoadingPage />
         </NavigationContainer>
       </SafeAreaView>
     </Provider>

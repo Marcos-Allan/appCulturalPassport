@@ -31,7 +31,7 @@
 import { View, Pressable, Vibration, Keyboard, Image, TextInput, Text, ScrollView, Button, ActivityIndicator, Alert } from "react-native";
 
 //IMPORTAÇÃO DAS BIBLIOTECAS
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import * as ImagePicker from 'expo-image-picker';
 
 //IMPORTAÇÃO DOS ICONES
@@ -60,7 +60,7 @@ import InfoStudentCard from "../../Components/InfoStudentCard";
 import instance from "../../utils/axios";
 
 //IMPORTAÇÃO DAS BIBLIOTECAS DO FIREBASE
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytesResumable, getDownloadURL, listAll } from 'firebase/storage';
 import { storage } from '../../utils/firebase';
 
 //TIPAGEEM DAS ROTAS
@@ -75,6 +75,7 @@ export const MyPerfil:React.FC<Props> = ({ navigation }) => {
     const { theme, menuOpen, toggleMenuOpen, userS, toggleUser, loading, toggleLoading, toggleAlert } = states
 
     //UTILIZAÇÃO DO HOOK useState
+    const [imgs, setImgs] = useState<string[]>([])
     const [progress, setProgress] = useState<number>(0)
     const [imgURL, setImgURL] = useState<string>('')
     const [isArq, setIsArq] = useState<boolean>(false)
@@ -89,6 +90,31 @@ export const MyPerfil:React.FC<Props> = ({ navigation }) => {
             return
         }
     }
+
+    //FUNÇÃO RESPONSÁVEL POR LISTAR OS AVATARES
+    const fetchImages = async () => {
+        //FAZ UMA REFERÊNCIA AO LOCAL DE AVATARES SALVOS NA NUVEM
+        const storageRef = ref(storage, '/images/avatars');
+        // const storageRef = ref(storage, '/images/icons-achievements');
+
+        try {
+            //PEGA AS IMAGENS DENTRO DA PASTA ESPECIFICADA
+            const result = await listAll(storageRef);
+
+            //PEGA A URL DOS AVATARES
+            const urlPromises = result.items.map((imageRef) => getDownloadURL(imageRef));
+            
+            //ESPERA TODOS OS AVATARES SEREM 
+            const urls = await Promise.all(urlPromises);
+            
+            console.log(urls)
+            
+            //SETA AS URLS DAS IMAGENS
+            setImgs(urls);
+        } catch (error) {
+            console.error('Erro ao listar imagens:', error);
+        }
+    };
 
     //SISTEMA DE VIBRAÇÃO AO RECEBER MENSAGEM
     const patternessage = [0, 400, 100, 400]
@@ -219,11 +245,14 @@ export const MyPerfil:React.FC<Props> = ({ navigation }) => {
             //TROCA O ESTADO DE LOADING DA APLICAÇÃO COMO false
             toggleLoading(false);
 
-            //ESCREVE NO CONSOLE A RESPOSTA DO SERVIDOR EM RESPOSTA A REQUISIÇÃO
-            console.log(response.data);
+            //FORMATA E SEPARA A STRING PARA VER MATÉRIA POR MATÉRIA DO CRONOGRAMA
+            const cronogram = response.data.cronogram.split('[')[1].split(']')[0].split(',')
 
-            //ATUALIZA OS DADOS DO USUÁRIO NO FRONTEND
-            toggleUser(response.data.name, response.data.img, response.data._id);
+            //ESCREVE NO CONSOLE
+            console.log(cronogram)
+
+            //REGISTRA O NOME E A FOTO E O ID DO USUARIO LOGADO PARA MOSTRAR NO FRONT-END
+            toggleUser(response.data.name, response.data.img, response.data._id, response.data.simulations, response.data.simulationsConcludeds, cronogram)
 
             //COLOCA UM ALERTA NA TELA
             toggleAlert(`success`, `Alteração feita com sucesso`, true, 5000);
@@ -251,6 +280,12 @@ export const MyPerfil:React.FC<Props> = ({ navigation }) => {
     //FUNÇÃO CHAMADA TODA VEZ QUE CARREGA A PÁGINA
     useEffect(() => {
         closeMenu()
+    },[])
+
+    //FUNÇÃO CHAMADA TODA VEZ QUE CARREGA A PÁGINA
+    useEffect(() => {
+        //CHAMA A FUNÇÃO QUE LISTA TODOS OS AVATARES/
+        fetchImages()
     },[])
 
     return(
@@ -317,37 +352,14 @@ export const MyPerfil:React.FC<Props> = ({ navigation }) => {
                     <Text className={`text-[24px] capitalize my-2 ${theme == 'light' ? 'text-my-black' : 'text-my-white'}`}>avatares</Text>
 
                     <View className={`w-[90%] flex flex-row flex-wrap justify-center items-center`}>
-                        <AvatarCard
-                            activo={image == "https://cultural-passport.vercel.app/avatar-1.jpg" ? true : false}
-                            event={() => setImage('https://cultural-passport.vercel.app/avatar-1.jpg')}
-                            image="https://cultural-passport.vercel.app/avatar-1.jpg"
-                        />
-                        <AvatarCard
-                            activo={image == "https://cultural-passport.vercel.app/avatar-2.jpg" ? true : false}
-                            event={() => setImage('https://cultural-passport.vercel.app/avatar-2.jpg')}
-                            image="https://cultural-passport.vercel.app/avatar-2.jpg"
-                        />
-                        <AvatarCard
-                            activo={image == "https://cultural-passport.vercel.app/avatar-3.jpg" ? true : false}
-                            event={() => setImage('https://cultural-passport.vercel.app/avatar-3.jpg')}
-                            image="https://cultural-passport.vercel.app/avatar-3.jpg"
-                        />
-                        <AvatarCard
-                            activo={image == "https://cultural-passport.vercel.app/avatar-4.jpg" ? true : false}
-                            event={() => setImage('https://cultural-passport.vercel.app/avatar-4.jpg')}
-                            image="https://cultural-passport.vercel.app/avatar-4.jpg"
-                        />
-                        <AvatarCard
-                            activo={image == "https://cultural-passport.vercel.app/avatar-5.jpg" ? true : false}
-                            event={() => setImage('https://cultural-passport.vercel.app/avatar-5.jpg')}
-                            image="https://cultural-passport.vercel.app/avatar-5.jpg"
-                        />
-                        <AvatarCard
-                            activo={image == "https://cultural-passport.vercel.app/avatar-6.jpg" ? true : false}
-                            event={() => setImage('https://cultural-passport.vercel.app/avatar-6.jpg')}
-                            image="https://cultural-passport.vercel.app/avatar-6.jpg"
-                        />
-                        
+                        <AvatarCard activo={image == imgs[1] ? true : false} image={imgs[0]} event={() => setImage(imgs[0])} />
+                        <AvatarCard activo={image == imgs[1] ? true : false} image={imgs[1]} event={() => setImage(imgs[1])} />
+                        <AvatarCard activo={image == imgs[2] ? true : false} image={imgs[2]} event={() => setImage(imgs[2])} />
+                        <AvatarCard activo={image == imgs[3] ? true : false} image={imgs[3]} event={() => setImage(imgs[3])} />
+                        <AvatarCard activo={image == imgs[4] ? true : false} image={imgs[4]} event={() => setImage(imgs[4])} />
+                        <AvatarCard activo={image == imgs[5] ? true : false} image={imgs[5]} event={() => setImage(imgs[5])} />
+                        <AvatarCard activo={image == imgs[6] ? true : false} image={imgs[6]} event={() => setImage(imgs[6])} />
+                        <AvatarCard activo={image == imgs[7] ? true : false} image={imgs[7]} event={() => setImage(imgs[7])} />
                     </View> 
 
                     <View className={`w-full items-center mt-5`}>
